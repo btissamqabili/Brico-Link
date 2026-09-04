@@ -53,7 +53,83 @@
                 >
                     ← Retour aux missions
                 </a>
+@if(session('success'))
+    <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+        {{ session('success') }}
+    </div>
+@endif
 
+@if(session('error'))
+    <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+        {{ session('error') }}
+    </div>
+@endif
+
+<div class="border-t pt-6 mt-6">
+
+    <h3 class="text-lg font-semibold mb-4">
+        Proposer mes services
+    </h3>
+
+    <form
+        method="POST"
+        action="{{ route('offres.store', $mission) }}"
+    >
+        @csrf
+
+        <div class="mb-4">
+            <label for="prix_propose" class="block font-medium text-gray-700">
+                Prix proposé (DH)
+            </label>
+
+            <input
+                type="number"
+                name="prix_propose"
+                id="prix_propose"
+                step="0.01"
+                min="0"
+                value="{{ old('prix_propose') }}"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            >
+
+            @error('prix_propose')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+            @enderror
+        </div>
+
+        <div class="mb-4">
+            <label for="message" class="block font-medium text-gray-700">
+                Message
+            </label>
+
+            <textarea
+                name="message"
+                id="message"
+                rows="4"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                placeholder="Présentez votre proposition au client..."
+            >{{ old('message') }}</textarea>
+
+            @error('message')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+            @enderror
+        </div>
+
+        <button
+            type="submit"
+            style="background-color:#4f46e5;color:white;padding:10px 20px;border-radius:6px;font-weight:600;border:none;cursor:pointer;"
+        >
+            Proposer mes services
+        </button>
+
+    </form>
+
+</div>
             </div>
 
         </div>

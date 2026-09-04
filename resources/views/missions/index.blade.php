@@ -88,6 +88,12 @@
                                 >
                                     Supprimer
                                 </button>
+                                <a
+    href="{{ route('missions.offres', $mission) }}"
+    style="background-color:#059669;color:white;padding:8px 16px;border-radius:6px;font-weight:600;text-decoration:none;display:inline-block;"
+>
+    Voir les offres
+</a>
                             </form>
 
                         </div>

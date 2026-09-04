@@ -45,4 +45,8 @@ public function missions(): HasMany
 {
     return $this->hasMany(Mission::class, 'client_id');
 }
+public function offres(): HasMany
+{
+    return $this->hasMany(Offre::class, 'prestataire_id');
+}
 }

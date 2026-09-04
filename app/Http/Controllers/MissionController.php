@@ -55,4 +55,15 @@ public function destroy(Mission $mission)
         ->route('missions.index')
         ->with('success', 'Mission supprimée avec succès.');
 }
+public function offres(Mission $mission)
+{
+    abort_unless($mission->client_id === auth()->id(), 403);
+
+    $offres = $mission->offres()
+        ->with('prestataire')
+        ->latest()
+        ->get();
+
+    return view('missions.offres', compact('mission', 'offres'));
+}
 }
