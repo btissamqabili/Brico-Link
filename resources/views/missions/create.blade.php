@@ -1,0 +1,115 @@
+<x-app-layout>
+
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Ajouter une mission
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+
+                <h3 class="text-lg font-semibold mb-6">
+                    Publier une nouvelle mission
+                </h3>
+
+                @if ($errors->any())
+                    <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('missions.store') }}">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label for="titre" class="block font-medium mb-2">
+                            Titre
+                        </label>
+
+                        <input
+                            type="text"
+                            id="titre"
+                            name="titre"
+                            value="{{ old('titre') }}"
+                            required
+                            style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;"
+                        >
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="block font-medium mb-2">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="5"
+                            required
+                            style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;"
+                        >{{ old('description') }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="budget" class="block font-medium mb-2">
+                            Budget (DH)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="budget"
+                            name="budget"
+                            value="{{ old('budget') }}"
+                            min="0"
+                            step="0.01"
+                            style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;"
+                        >
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="adresse" class="block font-medium mb-2">
+                            Adresse
+                        </label>
+
+                        <input
+                            type="text"
+                            id="adresse"
+                            name="adresse"
+                            value="{{ old('adresse') }}"
+                            style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;"
+                        >
+                    </div>
+
+                    <div class="flex items-center gap-3">
+
+                        <button
+                            type="submit"
+                            style="background-color:#4f46e5;color:white;padding:10px 20px;border-radius:6px;font-weight:600;border:none;cursor:pointer;"
+                        >
+                            Ajouter la mission
+                        </button>
+
+                        <a
+                            href="{{ route('missions.index') }}"
+                            style="background-color:#6b7280;color:white;padding:10px 20px;border-radius:6px;font-weight:600;text-decoration:none;"
+                        >
+                            Annuler
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+</x-app-layout>
