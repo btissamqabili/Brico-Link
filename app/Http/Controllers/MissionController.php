@@ -66,4 +66,22 @@ public function offres(Mission $mission)
 
     return view('missions.offres', compact('mission', 'offres'));
 }
+public function complete(Mission $mission)
+{
+    // Vérifier que la mission appartient au client connecté
+    abort_unless($mission->client_id === auth()->id(), 403);
+
+    // Vérifier que la mission est en cours
+    abort_if($mission->statut !== 'en_cours', 404);
+
+    // Terminer la mission
+    $mission->update([
+        'statut' => 'terminee',
+    ]);
+
+    return back()->with(
+        'success',
+        'La mission a été terminée avec succès.'
+    );
+}
 }

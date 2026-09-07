@@ -1,63 +1,86 @@
 <x-app-layout>
 
-    <div class="max-w-4xl mx-auto py-8">
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Notifications
+        </h2>
+    </x-slot>
 
-        <h1 class="text-2xl font-bold mb-6">
-            🔔 Mes notifications
-        </h1>
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-        @if($notifications->isEmpty())
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
 
-            <div class="bg-white p-6 rounded-lg shadow text-gray-500">
-                Aucune notification pour le moment.
-            </div>
+                <h3 class="text-lg font-semibold mb-6">
+                    Mes notifications
+                </h3>
 
-        @else
+                @forelse($notifications as $notification)
 
-            <div class="space-y-4">
-
-                @foreach($notifications as $notification)
-
-                    <a
-                        href="{{ route('notifications.read', $notification->id) }}"
-                        class="block p-4 rounded-lg shadow
-                        {{ $notification->read_at ? 'bg-white' : 'bg-blue-50 border border-blue-200' }}
-                        hover:bg-gray-100"
+                    <div
+                        class="border rounded-lg p-4 mb-4
+                        {{ $notification->read_at ? 'bg-white' : 'bg-blue-50' }}"
                     >
 
-                        <div class="flex justify-between items-start">
+                        <div class="flex justify-between items-center">
 
                             <div>
-                                <p class="font-medium text-gray-800">
+                                <p class="font-semibold">
                                     {{ $notification->data['message'] }}
                                 </p>
 
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Prix proposé :
-                                    {{ $notification->data['prix_propose'] }} DH
-                                </p>
+                                @if(isset($notification->data['prix_propose']))
+                                    <p class="text-gray-600 mt-2">
+                                        Prix proposé :
+                                        {{ $notification->data['prix_propose'] }} DH
+                                    </p>
+                                @endif
 
-                                <p class="text-xs text-gray-400 mt-2">
-                                    {{ $notification->created_at->format('d/m/Y à H:i') }}
+                                <p class="text-sm text-gray-500 mt-2">
+                                    {{ $notification->created_at->format('d/m/Y H:i') }}
                                 </p>
                             </div>
 
                             @if(!$notification->read_at)
-                                <span class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
-                                    Nouvelle
+
+                                <a
+                                    href="{{ route('notifications.read', $notification->id) }}"
+                                    style="
+                                        background-color:#4f46e5;
+                                        color:white;
+                                        padding:8px 16px;
+                                        border-radius:6px;
+                                        font-weight:600;
+                                        text-decoration:none;
+                                        display:inline-block;
+                                    "
+                                >
+                                    Voir l'offre
+                                </a>
+
+                            @else
+
+                                <span class="text-sm text-gray-500">
+                                    Lu
                                 </span>
+
                             @endif
 
                         </div>
 
-                    </a>
+                    </div>
 
-                @endforeach
+                @empty
+
+                    <p class="text-gray-500">
+                        Aucune notification pour le moment.
+                    </p>
+
+                @endforelse
 
             </div>
 
-        @endif
-
+        </div>
     </div>
 
 </x-app-layout>

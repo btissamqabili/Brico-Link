@@ -5,31 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-class Mission extends Model
+
+class Evaluation extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'mission_id',
         'client_id',
-        'titre',
-        'description',
-        'budget',
-        'adresse',
-        'statut',
+        'prestataire_id',
+        'note',
+        'commentaire',
     ];
+
+    public function mission(): BelongsTo
+    {
+        return $this->belongsTo(Mission::class);
+    }
 
     public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'client_id');
     }
-    public function offres(): HasMany
-{
-    return $this->hasMany(Offre::class);
-}
-public function evaluations(): HasMany
-{
-    return $this->hasMany(Evaluation::class);
-}
 
+    public function prestataire(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'prestataire_id');
+    }
 }

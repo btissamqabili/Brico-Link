@@ -11,66 +11,174 @@
 
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
 
+                {{-- En-tête --}}
                 <div class="flex justify-between items-center mb-6">
+
                     <h3 class="text-lg font-semibold">
                         Mes missions
                     </h3>
 
                     <a
                         href="{{ route('missions.create') }}"
-                        style="background-color:#4f46e5;color:white;padding:10px 20px;border-radius:6px;font-weight:600;text-decoration:none;display:inline-block;"
+                        style="
+                            background-color:#4f46e5;
+                            color:white;
+                            padding:10px 20px;
+                            border-radius:6px;
+                            font-weight:600;
+                            text-decoration:none;
+                            display:inline-block;
+                        "
                     >
                         + Ajouter une mission
                     </a>
+
                 </div>
 
+
+                {{-- Message de succès --}}
                 @if(session('success'))
+
                     <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
                         {{ session('success') }}
                     </div>
+
                 @endif
 
+
+                {{-- Message d'erreur --}}
+                @if(session('error'))
+
+                    <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                        {{ session('error') }}
+                    </div>
+
+                @endif
+
+
+                {{-- Liste des missions --}}
                 @forelse($missions as $mission)
 
                     <div class="border rounded-lg p-4 mb-4">
 
+                        {{-- Titre --}}
                         <h4 class="text-lg font-bold">
                             {{ $mission->titre }}
                         </h4>
 
+
+                        {{-- Description --}}
                         <p class="text-gray-600 mt-2">
                             {{ $mission->description }}
                         </p>
 
+
+                        {{-- Budget --}}
                         @if($mission->budget)
+
                             <p class="mt-2 font-semibold">
                                 Budget : {{ $mission->budget }} DH
                             </p>
+
                         @endif
 
+
+                        {{-- Adresse --}}
                         @if($mission->adresse)
+
                             <p class="mt-2">
                                 Adresse : {{ $mission->adresse }}
                             </p>
+
                         @endif
 
+
+                        {{-- Statut --}}
                         <p class="mt-2">
                             Statut :
+
                             <span class="font-semibold">
                                 {{ $mission->statut }}
                             </span>
                         </p>
 
+
                         {{-- Actions --}}
-                        <div style="margin-top:15px; display:flex; gap:10px;">
+                        <div
+                            style="
+                                margin-top:15px;
+                                display:flex;
+                                gap:10px;
+                                flex-wrap:wrap;
+                            "
+                        >
 
                             {{-- Modifier --}}
                             <a
                                 href="{{ route('missions.edit', $mission) }}"
-                                style="background-color:#4f46e5;color:white;padding:8px 16px;border-radius:6px;font-weight:600;text-decoration:none;display:inline-block;"
+                                style="
+                                    background-color:#4f46e5;
+                                    color:white;
+                                    padding:8px 16px;
+                                    border-radius:6px;
+                                    font-weight:600;
+                                    text-decoration:none;
+                                    display:inline-block;
+                                "
                             >
                                 Modifier
                             </a>
+
+
+                            {{-- Voir les offres --}}
+                            <a
+                                href="{{ route('missions.offres', $mission) }}"
+                                style="
+                                    background-color:#059669;
+                                    color:white;
+                                    padding:8px 16px;
+                                    border-radius:6px;
+                                    font-weight:600;
+                                    text-decoration:none;
+                                    display:inline-block;
+                                "
+                            >
+                                Voir les offres
+                            </a>
+
+
+                            {{-- Terminer la mission --}}
+                            @if($mission->statut === 'en_cours')
+
+                                <form
+                                    method="POST"
+                                    action="{{ route('missions.complete', $mission) }}"
+                                    style="display:inline-block;"
+                                >
+
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <button
+                                        type="submit"
+                                        onclick="return confirm('Voulez-vous terminer cette mission ?')"
+                                        style="
+                                            background-color:#16a34a;
+                                            color:white;
+                                            padding:8px 16px;
+                                            border-radius:6px;
+                                            font-weight:600;
+                                            border:none;
+                                            cursor:pointer;
+                                        "
+                                    >
+                                        Terminer la mission
+                                    </button>
+
+                                </form>
+
+                            @endif
+
 
                             {{-- Supprimer --}}
                             <form
@@ -78,22 +186,26 @@
                                 action="{{ route('missions.destroy', $mission) }}"
                                 style="display:inline-block;"
                             >
+
                                 @csrf
                                 @method('DELETE')
 
                                 <button
                                     type="submit"
                                     onclick="return confirm('Voulez-vous vraiment supprimer cette mission ?')"
-                                    style="background-color:#dc2626;color:white;padding:8px 16px;border-radius:6px;font-weight:600;border:none;cursor:pointer;"
+                                    style="
+                                        background-color:#dc2626;
+                                        color:white;
+                                        padding:8px 16px;
+                                        border-radius:6px;
+                                        font-weight:600;
+                                        border:none;
+                                        cursor:pointer;
+                                    "
                                 >
                                     Supprimer
                                 </button>
-                                <a
-    href="{{ route('missions.offres', $mission) }}"
-    style="background-color:#059669;color:white;padding:8px 16px;border-radius:6px;font-weight:600;text-decoration:none;display:inline-block;"
->
-    Voir les offres
-</a>
+
                             </form>
 
                         </div>

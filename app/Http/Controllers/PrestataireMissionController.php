@@ -16,9 +16,11 @@ class PrestataireMissionController extends Controller
     }
 
     public function show(Mission $mission)
-    {
-        abort_if($mission->statut !== 'ouverte', 404);
+{
+    abort_if($mission->statut !== 'ouverte', 404);
 
-        return view('missions.show', compact('mission'));
-    }
+    $mission->load('offres.prestataire');
+
+    return view('missions.show', compact('mission'));
+}
 }

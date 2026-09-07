@@ -5,8 +5,10 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\PrestataireMissionController;
 use App\Http\Controllers\OffreController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\PrestataireController;
+use Illuminate\Support\Facades\Route;
 
 
 /*
@@ -27,17 +29,23 @@ Route::get('/', function () {
 */
 
 Route::get('/dashboard', function () {
+
     return match (auth()->user()->role) {
+
         'client' => view('dashboard.client'),
+
         'prestataire' => view('dashboard.prestataire'),
+
         'admin' => view('dashboard.admin'),
+
     };
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
 /*
 |--------------------------------------------------------------------------
-| Profile
+| Profil utilisateur connecté
 |--------------------------------------------------------------------------
 */
 
@@ -51,6 +59,7 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
 });
 
 
@@ -78,10 +87,8 @@ Route::middleware(['auth', 'role:admin'])->get('/admin', function () {
 | Routes Client
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:client'])->group(function () {
 
-    // Missions
     Route::get('/missions', [MissionController::class, 'index'])
         ->name('missions.index');
 
@@ -99,9 +106,11 @@ Route::middleware(['auth', 'role:client'])->group(function () {
 
     Route::delete('/missions/{mission}', [MissionController::class, 'destroy'])
         ->name('missions.destroy');
+        Route::patch('/missions/{mission}/complete', [MissionController::class, 'complete'])
+    ->name('missions.complete');
 
     // Voir les offres reçues
-    Route::get('/missions/{mission}/offres', [MissionController::class, 'offres'])
+    Route::get('/missions/{mission}/offres', [OffreController::class, 'recues'])
         ->name('missions.offres');
 
     // Accepter une offre
@@ -111,6 +120,14 @@ Route::middleware(['auth', 'role:client'])->group(function () {
     // Refuser une offre
     Route::patch('/offres/{offre}/refuse', [OffreController::class, 'refuse'])
         ->name('offres.refuse');
+
+    // Évaluer une mission
+    Route::post('/missions/{mission}/evaluation', [EvaluationController::class, 'store'])
+        ->name('evaluations.store');
+
+    // Profil prestataire
+    Route::get('/prestataires/{id}', [PrestataireController::class, 'show'])
+        ->name('prestataires.show');
 });
 
 
@@ -122,36 +139,75 @@ Route::middleware(['auth', 'role:client'])->group(function () {
 
 Route::middleware(['auth', 'role:prestataire'])->group(function () {
 
-    // Services
-    Route::get('/services', [ServiceController::class, 'index'])
-        ->name('services.index');
+    /*
+    | Services
+    */
 
-    Route::get('/services/create', [ServiceController::class, 'create'])
-        ->name('services.create');
+    Route::get('/services',
+        [ServiceController::class, 'index']
+    )->name('services.index');
 
-    Route::post('/services', [ServiceController::class, 'store'])
-        ->name('services.store');
+    Route::get('/services/create',
+        [ServiceController::class, 'create']
+    )->name('services.create');
 
-    Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])
-        ->name('services.edit');
+    Route::post('/services',
+        [ServiceController::class, 'store']
+    )->name('services.store');
 
-    Route::put('/services/{service}', [ServiceController::class, 'update'])
-        ->name('services.update');
+    Route::get('/services/{service}/edit',
+        [ServiceController::class, 'edit']
+    )->name('services.edit');
 
-    Route::delete('/services/{service}', [ServiceController::class, 'destroy'])
-        ->name('services.destroy');
+    Route::put('/services/{service}',
+        [ServiceController::class, 'update']
+    )->name('services.update');
+
+    Route::delete('/services/{service}',
+        [ServiceController::class, 'destroy']
+    )->name('services.destroy');
 
 
-    // Missions disponibles
-    Route::get('/missions-disponibles', [PrestataireMissionController::class, 'index'])
-        ->name('prestataire.missions.index');
+    /*
+    | Missions disponibles
+    */
 
-    Route::get('/missions-disponibles/{mission}', [PrestataireMissionController::class, 'show'])
-        ->name('prestataire.missions.show');
+    Route::get('/missions-disponibles',
+        [PrestataireMissionController::class, 'index']
+    )->name('prestataire.missions.index');
 
-    // Envoyer une offre
-    Route::post('/missions-disponibles/{mission}/offres', [OffreController::class, 'store'])
-        ->name('offres.store');
+    Route::get('/missions-disponibles/{mission}',
+        [PrestataireMissionController::class, 'show']
+    )->name('prestataire.missions.show');
+
+
+    /*
+    | Envoyer une offre
+    */
+
+    Route::post('/missions-disponibles/{mission}/offres',
+        [OffreController::class, 'store']
+    )->name('offres.store');
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Notifications
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/notifications',
+        [NotificationController::class, 'index']
+    )->name('notifications.index');
+
+    Route::get('/notifications/{id}/read',
+        [NotificationController::class, 'read']
+    )->name('notifications.read');
+
 });
 
 
@@ -160,11 +216,5 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
 | Authentication
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index'])
-        ->name('notifications.index');
 
-    Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])
-        ->name('notifications.read');
-});
 require __DIR__ . '/auth.php';

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Evaluation;
+
 
 #[Fillable([
     'name',
@@ -49,4 +51,18 @@ public function offres(): HasMany
 {
     return $this->hasMany(Offre::class, 'prestataire_id');
 }
+public function evaluationsAsClient()
+{
+    return $this->hasMany(Evaluation::class, 'client_id');
+}
+
+public function evaluationsAsPrestataire()
+{
+    return $this->hasMany(Evaluation::class, 'prestataire_id');
+}
+public function evaluationsRecues()
+{
+    return $this->hasMany(Evaluation::class, 'prestataire_id');
+}
+
 }
