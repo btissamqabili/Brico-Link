@@ -6,6 +6,7 @@ use App\Http\Controllers\MissionController;
 use App\Http\Controllers\PrestataireMissionController;
 use App\Http\Controllers\OffreController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
 
 
 /*
@@ -159,5 +160,11 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
 | Authentication
 |--------------------------------------------------------------------------
 */
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
 
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])
+        ->name('notifications.read');
+});
 require __DIR__ . '/auth.php';

@@ -15,6 +15,20 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @if(auth()->user()->role === 'client')
+    <a href="{{ route('notifications.index') }}"
+       class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+
+        🔔 Notifications
+
+        @if(auth()->user()->unreadNotifications->count() > 0)
+            <span class="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                {{ auth()->user()->unreadNotifications->count() }}
+            </span>
+        @endif
+
+    </a>
+@endif
                 </div>
             </div>
 
