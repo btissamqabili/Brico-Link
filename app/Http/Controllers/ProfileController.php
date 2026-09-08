@@ -15,39 +15,53 @@ class ProfileController extends Controller
      * Display the user's profile form.
      */
     public function edit(Request $request): View
-    {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+{
+    $user = $request->user();
+
+    $evaluations = collect();
+
+    if ($user->role === 'prestataire') {
+        $evaluations = $user->evaluationsRecues()
+            ->with('client')
+            ->latest()
+            ->get();
     }
+
+    return view('profile.edit', [
+        'user' => $user,
+        'evaluations' => $evaluations,
+    ]);
+}
 
     /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    $data = $request->validated();
+    {
+        $data = $request->validated();
 
-    // Upload de la photo
-    if ($request->hasFile('photo')) {
-        $data['photo'] = $request->file('photo')->store('profile-photos', 'public');
-    } else {
-        unset($data['photo']);
+        // Upload de la photo
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')
+                ->store('profile-photos', 'public');
+        } else {
+            unset($data['photo']);
+        }
+
+        $user = $request->user();
+
+        $user->fill($data);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'profile-updated');
     }
 
-    $user = $request->user();
-
-    $user->fill($data);
-
-    if ($user->isDirty('email')) {
-        $user->email_verified_at = null;
-    }
-
-    $user->save();
-
-    return Redirect::route('profile.edit')
-        ->with('status', 'profile-updated');
-}
     /**
      * Delete the user's account.
      */

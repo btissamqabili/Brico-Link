@@ -64,5 +64,9 @@ public function evaluationsRecues()
 {
     return $this->hasMany(Evaluation::class, 'prestataire_id');
 }
+public function evaluationsDonnees()
+{
+    return $this->hasMany(Evaluation::class, 'client_id');
+}
 
 }
