@@ -17,6 +17,7 @@ class ServiceStoreRequest extends FormRequest
             'nom' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'prix' => ['nullable', 'numeric', 'min:0'],
+            'categorie_id' => ['required', 'exists:categories,id'],
         ];
     }
 }

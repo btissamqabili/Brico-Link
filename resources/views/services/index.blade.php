@@ -1,4 +1,5 @@
 <x-app-layout>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Mes services
@@ -35,6 +36,13 @@
                             {{ $service->nom }}
                         </h4>
 
+                        {{-- Catégorie --}}
+                        @if($service->categorie)
+                            <p class="text-sm text-indigo-600 mt-1">
+                                Catégorie : {{ $service->categorie->nom }}
+                            </p>
+                        @endif
+
                         <p class="text-gray-600 mt-2">
                             {{ $service->description }}
                         </p>
@@ -49,20 +57,22 @@
                            style="background-color: #4f46e5; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; display: inline-block; margin-top: 10px;">
                             Modifier
                         </a>
-<form method="POST"
-      action="{{ route('services.destroy', $service) }}"
-      style="display: inline-block; margin-top: 10px;">
-    @csrf
-    @method('DELETE')
 
-    <button
-        type="submit"
-        onclick="return confirm('Voulez-vous vraiment supprimer ce service ?')"
-        style="background-color: #dc2626; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;"
-    >
-        Supprimer
-    </button>
-</form>
+                        <form method="POST"
+                              action="{{ route('services.destroy', $service) }}"
+                              style="display: inline-block; margin-top: 10px;">
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                onclick="return confirm('Voulez-vous vraiment supprimer ce service ?')"
+                                style="background-color: #dc2626; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;"
+                            >
+                                Supprimer
+                            </button>
+                        </form>
+
                     </div>
 
                 @empty
@@ -77,4 +87,6 @@
 
         </div>
     </div>
+
 </x-app-layout>
+

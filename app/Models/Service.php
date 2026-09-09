@@ -12,6 +12,7 @@ class Service extends Model
 
     protected $fillable = [
         'prestataire_id',
+        'categorie_id',
         'nom',
         'description',
         'prix',
@@ -20,5 +21,10 @@ class Service extends Model
     public function prestataire(): BelongsTo
     {
         return $this->belongsTo(User::class, 'prestataire_id');
+    }
+
+    public function categorie(): BelongsTo
+    {
+        return $this->belongsTo(Categorie::class, 'categorie_id');
     }
 }

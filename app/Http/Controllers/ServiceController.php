@@ -9,17 +9,22 @@ use Illuminate\Support\Facades\Gate;
 
 class ServiceController extends Controller
 {
-    public function index()
-    {
-        $services = auth()->user()->services;
+   public function index()
+{
+    $services = auth()->user()
+        ->services()
+        ->with('categorie')
+        ->get();
 
-        return view('services.index', compact('services'));
-    }
+    return view('services.index', compact('services'));
+}
 
     public function create()
-    {
-        return view('services.create');
-    }
+{
+    $categories = \App\Models\Categorie::all();
+
+    return view('services.create', compact('categories'));
+}
 
     public function store(ServiceStoreRequest $request)
     {
@@ -32,12 +37,14 @@ class ServiceController extends Controller
             ->with('success', 'Service ajouté avec succès.');
     }
 
-    public function edit(Service $service)
-    {
-        Gate::authorize('update', $service);
+   public function edit(Service $service)
+{
+    Gate::authorize('update', $service);
 
-        return view('services.edit', compact('service'));
-    }
+    $categories = \App\Models\Categorie::all();
+
+    return view('services.edit', compact('service', 'categories'));
+}
 
     public function update(ServiceUpdateRequest $request, Service $service)
     {

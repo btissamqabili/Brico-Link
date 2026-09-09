@@ -31,8 +31,5 @@ public function evaluations(): HasMany
 {
     return $this->hasMany(Evaluation::class);
 }
-public function evaluation()
-{
-    return $this->hasOne(Evaluation::class);
-}
+
 }

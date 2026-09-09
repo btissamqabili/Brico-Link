@@ -4,84 +4,111 @@ namespace App\Http\Controllers;
 
 use App\Models\Mission;
 use App\Http\Requests\MissionStoreRequest;
-use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\MissionUpdateRequest;
+use Illuminate\Support\Facades\Gate;
+
 class MissionController extends Controller
 {
     public function index()
-    {
-        $missions = auth()->user()->missions;
+{
+    $missions = auth()->user()
+        ->missions()
+        ->with([
+            'evaluations',
+            'offres' => function ($query) {
+                $query->where('statut', 'acceptee');
+            },
+        ])
+        ->latest()
+        ->get();
 
-        return view('missions.index', compact('missions'));
-    }
+    return view('missions.index', compact('missions'));
+}
 
     public function create()
     {
         return view('missions.create');
     }
-    public function edit(Mission $mission)
-{
-    Gate::authorize('update', $mission);
 
-    return view('missions.edit', compact('mission'));
-}
+    public function edit(Mission $mission)
+    {
+        Gate::authorize('update', $mission);
+
+        return view('missions.edit', compact('mission'));
+    }
+
     public function store(MissionStoreRequest $request)
     {
-       
-          $validated = $request->validated();
+        $validated = $request->validated();
+
         auth()->user()->missions()->create($validated);
 
         return redirect()
             ->route('missions.index')
             ->with('success', 'Mission créée avec succès.');
     }
-   public function update(MissionUpdateRequest $request, Mission $mission)
-{
-    Gate::authorize('update', $mission);
 
-    $mission->update($request->validated());
+    public function update(
+        MissionUpdateRequest $request,
+        Mission $mission
+    ) {
+        Gate::authorize('update', $mission);
 
-    return redirect()
-        ->route('missions.index')
-        ->with('success', 'Mission modifiée avec succès.');
-}
-public function destroy(Mission $mission)
-{
-    Gate::authorize('delete', $mission);
+        $mission->update($request->validated());
 
-    $mission->delete();
+        return redirect()
+            ->route('missions.index')
+            ->with('success', 'Mission modifiée avec succès.');
+    }
 
-    return redirect()
-        ->route('missions.index')
-        ->with('success', 'Mission supprimée avec succès.');
-}
-public function offres(Mission $mission)
-{
-    abort_unless($mission->client_id === auth()->id(), 403);
+    public function destroy(Mission $mission)
+    {
+        Gate::authorize('delete', $mission);
 
-    $offres = $mission->offres()
-        ->with('prestataire')
-        ->latest()
-        ->get();
+        $mission->delete();
 
-    return view('missions.offres', compact('mission', 'offres'));
-}
-public function complete(Mission $mission)
-{
-    // Vérifier que la mission appartient au client connecté
-    abort_unless($mission->client_id === auth()->id(), 403);
+        return redirect()
+            ->route('missions.index')
+            ->with('success', 'Mission supprimée avec succès.');
+    }
 
-    // Vérifier que la mission est en cours
-    abort_if($mission->statut !== 'en_cours', 404);
+    public function offres(Mission $mission)
+    {
+        abort_unless(
+            $mission->client_id === auth()->id(),
+            403
+        );
 
-    // Terminer la mission
-    $mission->update([
-        'statut' => 'terminee',
-    ]);
+        $offres = $mission->offres()
+            ->with('prestataire')
+            ->latest()
+            ->get();
 
-    return back()->with(
-        'success',
-        'La mission a été terminée avec succès.'
-    );
-}
+        return view(
+            'missions.offres',
+            compact('mission', 'offres')
+        );
+    }
+
+    public function complete(Mission $mission)
+    {
+        abort_unless(
+            $mission->client_id === auth()->id(),
+            403
+        );
+
+        abort_if(
+            $mission->statut !== 'en_cours',
+            404
+        );
+
+        $mission->update([
+            'statut' => 'terminee',
+        ]);
+
+        return back()->with(
+            'success',
+            'La mission a été terminée avec succès.'
+        );
+    }
 }

@@ -10,10 +10,10 @@ class EvaluationController extends Controller
 {
     public function store(Request $request, Mission $mission)
     {
-        // Vérifier que la mission appartient au client connecté
+        // 1. Vérifier que la mission appartient au client connecté
         abort_unless($mission->client_id === auth()->id(), 403);
 
-        // Vérifier que la mission est terminée
+        // 2. Vérifier que la mission est terminée
         if ($mission->statut !== 'terminee') {
             return back()->with(
                 'error',
@@ -21,29 +21,30 @@ class EvaluationController extends Controller
             );
         }
 
-        // Vérifier si une évaluation existe déjà
-        if (
-    Evaluation::where('mission_id', $mission->id)
-        ->where('client_id', auth()->id())
-        ->exists()
-) {
-    return back()->with(
-        'error',
-        'Vous avez déjà évalué ce prestataire pour cette mission.'
-    );
-}
+        // 3. Vérifier si le client a déjà évalué cette mission
+        $dejaEvaluee = Evaluation::where('mission_id', $mission->id)
+            ->where('client_id', auth()->id())
+            ->exists();
 
-        // Validation
+        if ($dejaEvaluee) {
+            return back()->with(
+                'error',
+                'Vous avez déjà évalué cette mission.'
+            );
+        }
+
+        // 4. Valider les données du formulaire
         $validated = $request->validate([
             'note' => ['required', 'integer', 'min:1', 'max:5'],
             'commentaire' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // Récupérer l'offre acceptée
+        // 5. Récupérer l'offre acceptée
         $offre = $mission->offres()
             ->where('statut', 'acceptee')
             ->first();
 
+        // 6. Vérifier qu'un prestataire est associé
         if (!$offre) {
             return back()->with(
                 'error',
@@ -51,7 +52,7 @@ class EvaluationController extends Controller
             );
         }
 
-        // Créer l'évaluation
+        // 7. Créer l'évaluation
         Evaluation::create([
             'mission_id' => $mission->id,
             'client_id' => auth()->id(),
@@ -60,6 +61,7 @@ class EvaluationController extends Controller
             'commentaire' => $validated['commentaire'] ?? null,
         ]);
 
+        // 8. Retourner avec message de succès
         return back()->with(
             'success',
             'Votre évaluation a été ajoutée avec succès.'
