@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Offre;
 use App\Models\Mission;
 use Illuminate\Http\Request;
-use App\Events\NouvelleOffreCreee;
+use App\Notifications\NouvelleOffreNotification;
 use App\Notifications\OffreAcceptedNotification;
 
 class OffreController extends Controller
@@ -65,8 +65,10 @@ class OffreController extends Controller
             'statut' => 'en_attente',
         ]);
 
-        // Déclencher l'événement de nouvelle offre
-        event(new NouvelleOffreCreee($offre));
+        // Notification directe au client
+        $mission->client->notify(
+            new NouvelleOffreNotification($offre)
+        );
 
         return redirect()
             ->route('prestataire.missions.show', $mission)
