@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Evaluation;
 use App\Models\Mission;
+use App\Notifications\NouvelleEvaluationNotification;
 use Illuminate\Http\Request;
 
 class EvaluationController extends Controller
@@ -39,7 +40,7 @@ class EvaluationController extends Controller
             'commentaire' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // 5. Récupérer l'offre acceptée
+        // 5. Récupérer l’offre acceptée
         $offre = $mission->offres()
             ->where('statut', 'acceptee')
             ->first();
@@ -53,7 +54,7 @@ class EvaluationController extends Controller
         }
 
         // 7. Créer l'évaluation
-        Evaluation::create([
+        $evaluation = Evaluation::create([
             'mission_id' => $mission->id,
             'client_id' => auth()->id(),
             'prestataire_id' => $offre->prestataire_id,
@@ -61,7 +62,12 @@ class EvaluationController extends Controller
             'commentaire' => $validated['commentaire'] ?? null,
         ]);
 
-        // 8. Retourner avec message de succès
+        // 8. Notifier le prestataire
+        $offre->prestataire->notify(
+            new NouvelleEvaluationNotification($evaluation)
+        );
+
+        // 9. Retourner avec message de succès
         return back()->with(
             'success',
             'Votre évaluation a été ajoutée avec succès.'

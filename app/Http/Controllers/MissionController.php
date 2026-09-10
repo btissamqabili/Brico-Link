@@ -6,7 +6,8 @@ use App\Models\Mission;
 use App\Http\Requests\MissionStoreRequest;
 use App\Http\Requests\MissionUpdateRequest;
 use Illuminate\Support\Facades\Gate;
-
+use App\Models\User;
+use App\Notifications\NouvelleMissionNotification;
 class MissionController extends Controller
 {
     public function index()
@@ -38,15 +39,23 @@ class MissionController extends Controller
     }
 
     public function store(MissionStoreRequest $request)
-    {
-        $validated = $request->validated();
+{
+    $validated = $request->validated();
 
-        auth()->user()->missions()->create($validated);
+    $mission = auth()->user()->missions()->create($validated);
 
-        return redirect()
-            ->route('missions.index')
-            ->with('success', 'Mission créée avec succès.');
+    $prestataires = User::where('role', 'prestataire')->get();
+
+    foreach ($prestataires as $prestataire) {
+        $prestataire->notify(
+            new NouvelleMissionNotification($mission)
+        );
     }
+
+    return redirect()
+        ->route('missions.index')
+        ->with('success', 'Mission créée avec succès.');
+}
 
     public function update(
         MissionUpdateRequest $request,

@@ -43,7 +43,6 @@
 
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-
             {{-- Nombre de notifications non lues --}}
             @if(auth()->user()->unreadNotifications->count() > 0)
 
@@ -101,7 +100,6 @@
 
                 </div>
 
-
             @else
 
                 <div class="space-y-4">
@@ -132,10 +130,19 @@
 
                                         @if($type === 'App\\Notifications\\NewMessageNotification')
                                             💬
+
                                         @elseif($type === 'App\\Notifications\\NouvelleOffreNotification')
                                             📩
+
                                         @elseif($type === 'App\\Notifications\\OffreAcceptedNotification')
                                             ✅
+
+                                        @elseif($type === 'App\\Notifications\\NouvelleMissionNotification')
+                                            🔨
+
+                                        @elseif($type === 'App\\Notifications\\NouvelleEvaluationNotification')
+                                            ⭐
+
                                         @else
                                             🔔
                                         @endif
@@ -164,6 +171,18 @@
 
                                                 <h3 class="font-semibold text-gray-800">
                                                     Offre acceptée
+                                                </h3>
+
+                                            @elseif($type === 'App\\Notifications\\NouvelleMissionNotification')
+
+                                                <h3 class="font-semibold text-gray-800">
+                                                    Nouvelle mission
+                                                </h3>
+
+                                            @elseif($type === 'App\\Notifications\\NouvelleEvaluationNotification')
+
+                                                <h3 class="font-semibold text-gray-800">
+                                                    Nouvelle évaluation
                                                 </h3>
 
                                             @else
@@ -218,6 +237,58 @@
                                             <p class="text-gray-700 mt-3">
                                                 {{ $notification->data['message'] ?? 'Votre offre a été acceptée.' }}
                                             </p>
+
+
+                                        {{-- Nouvelle mission --}}
+                                        @elseif($type === 'App\\Notifications\\NouvelleMissionNotification')
+
+                                            <p class="text-gray-700 mt-3">
+                                                {{ $notification->data['message'] ?? 'Une nouvelle mission est disponible.' }}
+                                            </p>
+
+                                            <p class="text-sm text-gray-500 mt-2">
+                                                Mission :
+                                                <span class="font-medium text-gray-700">
+                                                    {{ $notification->data['titre'] ?? 'Nouvelle mission' }}
+                                                </span>
+                                            </p>
+
+                                            @if(isset($notification->data['budget']))
+
+                                                <p class="text-sm text-gray-500 mt-1">
+                                                    Budget :
+                                                    <span class="font-medium text-gray-700">
+                                                        {{ $notification->data['budget'] }} DH
+                                                    </span>
+                                                </p>
+
+                                            @endif
+
+
+                                        {{-- Nouvelle évaluation --}}
+                                        @elseif($type === 'App\\Notifications\\NouvelleEvaluationNotification')
+
+                                            <p class="text-gray-700 mt-3">
+                                                {{ $notification->data['message'] ?? 'Vous avez reçu une nouvelle évaluation.' }}
+                                            </p>
+
+                                            <p class="text-sm text-gray-500 mt-2">
+                                                De :
+                                                <span class="font-medium text-gray-700">
+                                                    {{ $notification->data['client_name'] ?? 'Client' }}
+                                                </span>
+                                            </p>
+
+                                            @if(isset($notification->data['note']))
+
+                                                <p class="text-sm text-gray-500 mt-1">
+                                                    Note :
+                                                    <span class="font-medium text-gray-700">
+                                                        {{ $notification->data['note'] }}/5 ⭐
+                                                    </span>
+                                                </p>
+
+                                            @endif
 
 
                                         {{-- Autre --}}
@@ -279,3 +350,4 @@
     </div>
 
 </x-app-layout>
+

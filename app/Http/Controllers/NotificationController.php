@@ -42,7 +42,7 @@ class NotificationController extends Controller
             );
         }
 
-        // Notification : offre acceptée par le client
+        // Notification : offre acceptée par le prestataire
         if (
             $notification->type === 'App\\Notifications\\OffreAcceptedNotification'
         ) {
@@ -66,6 +66,22 @@ class NotificationController extends Controller
             );
         }
 
+        // Notification : nouvelle mission disponible
+        if (
+            $notification->type === 'App\\Notifications\\NouvelleMissionNotification'
+        ) {
+            return redirect()->route(
+                'prestataire.missions.show',
+                $notification->data['mission_id']
+            );
+        }
+
+        // Notification : nouvelle évaluation reçue
+if (
+    $notification->type === 'App\\Notifications\\NouvelleEvaluationNotification'
+) {
+    return redirect()->route('dashboard');
+}
         // Sécurité : si le type de notification est inconnu
         return redirect()->route('notifications.index');
     }
@@ -82,3 +98,4 @@ class NotificationController extends Controller
         );
     }
 }
+
