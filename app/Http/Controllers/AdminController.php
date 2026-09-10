@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Mission;
 use App\Models\Offre;
 use App\Models\Evaluation;
-
+use Illuminate\Support\Facades\Gate;
 class AdminController extends Controller
 {
     public function dashboard()
@@ -64,6 +64,7 @@ public function showUser(User $user)
 }
 public function destroyUser(User $user)
 {
+    Gate::authorize('delete', $user);
     $user->delete();
 
     return redirect()
