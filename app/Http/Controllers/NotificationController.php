@@ -29,4 +29,16 @@ class NotificationController extends Controller
             $notification->data['mission_id']
         );
     }
+    public function readAll()
+{
+    auth()->user()
+        ->unreadNotifications
+        ->markAsRead();
+
+    return back()->with(
+        'success',
+        'Toutes les notifications ont été marquées comme lues.'
+    );
+}
+
 }

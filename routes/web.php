@@ -174,6 +174,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])
         ->name('notifications.read');
+        Route::get('/notifications/read-all', [NotificationController::class, 'readAll'])
+    ->name('notifications.readAll');
 
 });
 
