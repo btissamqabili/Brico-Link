@@ -11,7 +11,8 @@ use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategorieController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\MessageController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -60,6 +61,8 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+        Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])
+    ->name('messages.store');
 
 });
 
@@ -176,6 +179,14 @@ Route::middleware('auth')->group(function () {
         ->name('notifications.read');
         Route::get('/notifications/read-all', [NotificationController::class, 'readAll'])
     ->name('notifications.readAll');
+    Route::get('/conversations', [ConversationController::class, 'index'])
+    ->name('conversations.index');
+
+Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])
+    ->name('conversations.show');
+
+Route::post('/conversations/user/{user}', [ConversationController::class, 'store'])
+    ->name('conversations.store');
 
 });
 

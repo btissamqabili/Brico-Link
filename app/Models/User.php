@@ -64,4 +64,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Evaluation::class, 'prestataire_id');
     }
+    public function conversationsClient(): HasMany
+{
+    return $this->hasMany(Conversation::class, 'client_id');
+}
+
+public function conversationsPrestataire(): HasMany
+{
+    return $this->hasMany(Conversation::class, 'prestataire_id');
+}
 }
