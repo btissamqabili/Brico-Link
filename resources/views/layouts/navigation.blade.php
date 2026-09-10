@@ -10,15 +10,12 @@
 
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-
                     <a href="{{ route('dashboard') }}">
                         <x-application-logo
                             class="block h-9 w-auto fill-current text-gray-800"
                         />
                     </a>
-
                 </div>
-
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -42,23 +39,18 @@
                             Mes missions
                         </x-nav-link>
 
-
                         <!-- Notifications -->
                         <a
                             href="{{ route('notifications.index') }}"
                             class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
                         >
-
                             🔔 Notifications
 
                             @if(auth()->user()->unreadNotifications->count() > 0)
-
                                 <span class="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                                     {{ auth()->user()->unreadNotifications->count() }}
                                 </span>
-
                             @endif
-
                         </a>
 
 
@@ -72,7 +64,6 @@
                             Mes services
                         </x-nav-link>
 
-
                         <!-- Missions disponibles -->
                         <x-nav-link
                             :href="route('prestataire.missions.index')"
@@ -81,10 +72,23 @@
                             Missions disponibles
                         </x-nav-link>
 
+                        <!-- Notifications -->
+                        <a
+                            href="{{ route('notifications.index') }}"
+                            class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                        >
+                            🔔 Notifications
+
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                                <span class="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                    {{ auth()->user()->unreadNotifications->count() }}
+                                </span>
+                            @endif
+                        </a>
+
                     @endif
 
                 </div>
-
             </div>
 
 
@@ -236,15 +240,12 @@
                     :href="route('notifications.index')"
                     :active="request()->routeIs('notifications.*')"
                 >
-
                     🔔 Notifications
 
                     @if(auth()->user()->unreadNotifications->count() > 0)
-
                         <span class="ml-2">
                             ({{ auth()->user()->unreadNotifications->count() }})
                         </span>
-
                     @endif
 
                 </x-responsive-nav-link>
@@ -267,6 +268,22 @@
                     :active="request()->routeIs('prestataire.missions.*')"
                 >
                     Missions disponibles
+                </x-responsive-nav-link>
+
+
+                <!-- Notifications -->
+                <x-responsive-nav-link
+                    :href="route('notifications.index')"
+                    :active="request()->routeIs('notifications.*')"
+                >
+                    🔔 Notifications
+
+                    @if(auth()->user()->unreadNotifications->count() > 0)
+                        <span class="ml-2">
+                            ({{ auth()->user()->unreadNotifications->count() }})
+                        </span>
+                    @endif
+
                 </x-responsive-nav-link>
 
             @endif
@@ -324,3 +341,4 @@
     </div>
 
 </nav>
+
