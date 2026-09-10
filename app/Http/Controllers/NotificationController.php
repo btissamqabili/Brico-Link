@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -51,6 +52,20 @@ class NotificationController extends Controller
             );
         }
 
+        // Notification : nouveau message
+        if (
+            $notification->type === 'App\\Notifications\\NewMessageNotification'
+        ) {
+            $message = Message::findOrFail(
+                $notification->data['message_id']
+            );
+
+            return redirect()->route(
+                'conversations.show',
+                $message->conversation_id
+            );
+        }
+
         // Sécurité : si le type de notification est inconnu
         return redirect()->route('notifications.index');
     }
@@ -67,4 +82,3 @@ class NotificationController extends Controller
         );
     }
 }
-

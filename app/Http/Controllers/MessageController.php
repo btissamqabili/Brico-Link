@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Notifications\NewMessageNotification;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -23,11 +24,27 @@ class MessageController extends Controller
             'contenu' => ['required', 'string', 'max:2000'],
         ]);
 
-        Message::create([
+        $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $userId,
             'contenu' => $validated['contenu'],
         ]);
+
+        // Déterminer le destinataire
+        $destinataireId = $conversation->client_id === $userId
+            ? $conversation->prestataire_id
+            : $conversation->client_id;
+
+        $destinataire = \App\Models\User::find($destinataireId);
+
+        // Envoyer la notification
+        $destinataire->notify(
+            new NewMessageNotification(
+                $message->id,
+                auth()->user()->name,
+                $message->contenu
+            )
+        );
 
         return redirect()->route(
             'conversations.show',
@@ -35,3 +52,4 @@ class MessageController extends Controller
         );
     }
 }
+
