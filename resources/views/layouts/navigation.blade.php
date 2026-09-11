@@ -39,6 +39,14 @@
                             Mes missions
                         </x-nav-link>
 
+                        <!-- Messages -->
+                        <x-nav-link
+                            :href="route('conversations.index')"
+                            :active="request()->routeIs('conversations.*', 'messages.*')"
+                        >
+                            Messages
+                        </x-nav-link>
+
                         <!-- Notifications -->
                         <a
                             href="{{ route('notifications.index') }}"
@@ -72,6 +80,14 @@
                             Missions disponibles
                         </x-nav-link>
 
+                        <!-- Messages -->
+                        <x-nav-link
+                            :href="route('conversations.index')"
+                            :active="request()->routeIs('conversations.*', 'messages.*')"
+                        >
+                            Messages
+                        </x-nav-link>
+
                         <!-- Notifications -->
                         <a
                             href="{{ route('notifications.index') }}"
@@ -85,6 +101,33 @@
                                 </span>
                             @endif
                         </a>
+
+
+                    @elseif(auth()->user()->role === 'admin')
+
+                        <!-- Utilisateurs -->
+                        <x-nav-link
+                            :href="route('admin.users.index')"
+                            :active="request()->routeIs('admin.users.*')"
+                        >
+                            Utilisateurs
+                        </x-nav-link>
+
+                        <!-- Catégories -->
+                        <x-nav-link
+                            :href="route('categories.index')"
+                            :active="request()->routeIs('categories.*')"
+                        >
+                            Catégories
+                        </x-nav-link>
+
+                        <!-- Évaluations -->
+                        <x-nav-link
+                            :href="route('admin.evaluations.index')"
+                            :active="request()->routeIs('admin.evaluations.*')"
+                        >
+                            Évaluations
+                        </x-nav-link>
 
                     @endif
 
@@ -117,7 +160,7 @@
 
                                     <path
                                         fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414 1 1 0 01-1.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                                         clip-rule="evenodd"
                                     />
 
@@ -234,6 +277,13 @@
                     Mes missions
                 </x-responsive-nav-link>
 
+                <!-- Messages -->
+                <x-responsive-nav-link
+                    :href="route('conversations.index')"
+                    :active="request()->routeIs('conversations.*')"
+                >
+                    Messages
+                </x-responsive-nav-link>
 
                 <!-- Notifications -->
                 <x-responsive-nav-link
@@ -247,7 +297,6 @@
                             ({{ auth()->user()->unreadNotifications->count() }})
                         </span>
                     @endif
-
                 </x-responsive-nav-link>
 
 
@@ -261,7 +310,6 @@
                     Mes services
                 </x-responsive-nav-link>
 
-
                 <!-- Missions disponibles -->
                 <x-responsive-nav-link
                     :href="route('prestataire.missions.index')"
@@ -270,6 +318,13 @@
                     Missions disponibles
                 </x-responsive-nav-link>
 
+                <!-- Messages -->
+                <x-responsive-nav-link
+                    :href="route('conversations.index')"
+                    :active="request()->routeIs('conversations.*')"
+                >
+                    Messages
+                </x-responsive-nav-link>
 
                 <!-- Notifications -->
                 <x-responsive-nav-link
@@ -283,7 +338,33 @@
                             ({{ auth()->user()->unreadNotifications->count() }})
                         </span>
                     @endif
+                </x-responsive-nav-link>
 
+
+            @elseif(auth()->user()->role === 'admin')
+
+                <!-- Utilisateurs -->
+                <x-responsive-nav-link
+                    :href="route('admin.users.index')"
+                    :active="request()->routeIs('admin.users.*')"
+                >
+                    Utilisateurs
+                </x-responsive-nav-link>
+
+                <!-- Catégories -->
+                <x-responsive-nav-link
+                    :href="route('categories.index')"
+                    :active="request()->routeIs('categories.*')"
+                >
+                    Catégories
+                </x-responsive-nav-link>
+
+                <!-- Évaluations -->
+                <x-responsive-nav-link
+                    :href="route('admin.evaluations.index')"
+                    :active="request()->routeIs('admin.evaluations.*')"
+                >
+                    Évaluations
                 </x-responsive-nav-link>
 
             @endif

@@ -7,6 +7,7 @@
     </x-slot>
 
     <div class="py-12">
+
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
@@ -35,24 +36,30 @@
                 </h3>
 
                 <div class="mb-4">
-                    <p class="font-semibold">Description :</p>
+
+                    <p class="font-semibold">
+                        Description :
+                    </p>
 
                     <p class="text-gray-600 mt-1">
                         {{ $mission->description }}
                     </p>
+
                 </div>
 
 
                 @if($mission->budget)
 
                     <div class="mb-4">
+
                         <p class="font-semibold">
                             Budget :
                         </p>
 
                         <p class="mt-1">
-                            {{ $mission->budget }} DH
+                            {{ number_format($mission->budget, 2, ',', ' ') }} DH
                         </p>
+
                     </div>
 
                 @endif
@@ -61,6 +68,7 @@
                 @if($mission->adresse)
 
                     <div class="mb-4">
+
                         <p class="font-semibold">
                             Adresse :
                         </p>
@@ -68,6 +76,7 @@
                         <p class="mt-1">
                             {{ $mission->adresse }}
                         </p>
+
                     </div>
 
                 @endif
@@ -80,7 +89,7 @@
                     </p>
 
                     <p class="mt-1 text-green-600 font-semibold">
-                        {{ $mission->statut }}
+                        {{ ucfirst(str_replace('_', ' ', $mission->statut)) }}
                     </p>
 
                 </div>
@@ -110,100 +119,124 @@
                 {{-- PROPOSER UNE OFFRE --}}
                 {{-- ============================= --}}
 
-                <div class="border-t pt-6 mt-6">
+                @if($mission->statut === 'ouverte')
 
-                    <h3 class="text-lg font-semibold mb-4">
-                        Proposer mes services
-                    </h3>
+                    @if(!$aUneOffre)
 
-                    <form
-                        method="POST"
-                        action="{{ route('offres.store', $mission) }}"
-                    >
+                        <div class="border-t pt-6 mt-6">
 
-                        @csrf
+                            <h3 class="text-lg font-semibold mb-4">
+                                Proposer mes services
+                            </h3>
 
-
-                        {{-- Prix proposé --}}
-                        <div class="mb-4">
-
-                            <label
-                                for="prix_propose"
-                                class="block font-medium text-gray-700"
-                            >
-                                Prix proposé (DH)
-                            </label>
-
-                            <input
-                                type="number"
-                                name="prix_propose"
-                                id="prix_propose"
-                                step="0.01"
-                                min="0"
-                                value="{{ old('prix_propose') }}"
-                                required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            <form
+                                method="POST"
+                                action="{{ route('offres.store', $mission) }}"
                             >
 
-                            @error('prix_propose')
+                                @csrf
 
-                                <p class="text-red-600 text-sm mt-1">
-                                    {{ $message }}
-                                </p>
 
-                            @enderror
+                                {{-- Prix proposé --}}
+                                <div class="mb-4">
+
+                                    <label
+                                        for="prix_propose"
+                                        class="block font-medium text-gray-700"
+                                    >
+                                        Prix proposé (DH)
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        name="prix_propose"
+                                        id="prix_propose"
+                                        step="0.01"
+                                        min="0"
+                                        value="{{ old('prix_propose') }}"
+                                        required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    >
+
+                                    @error('prix_propose')
+
+                                        <p class="text-red-600 text-sm mt-1">
+                                            {{ $message }}
+                                        </p>
+
+                                    @enderror
+
+                                </div>
+
+
+                                {{-- Message de l'offre --}}
+                                <div class="mb-4">
+
+                                    <label
+                                        for="message"
+                                        class="block font-medium text-gray-700"
+                                    >
+                                        Message
+                                    </label>
+
+                                    <textarea
+                                        name="message"
+                                        id="message"
+                                        rows="4"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        placeholder="Présentez votre proposition au client..."
+                                    >{{ old('message') }}</textarea>
+
+                                    @error('message')
+
+                                        <p class="text-red-600 text-sm mt-1">
+                                            {{ $message }}
+                                        </p>
+
+                                    @enderror
+
+                                </div>
+
+
+                                {{-- Bouton offre --}}
+                                <button
+                                    type="submit"
+                                    style="
+                                        background-color:#4f46e5;
+                                        color:white;
+                                        padding:10px 20px;
+                                        border-radius:6px;
+                                        font-weight:600;
+                                        border:none;
+                                        cursor:pointer;
+                                    "
+                                >
+                                    Proposer mes services
+                                </button>
+
+                            </form>
 
                         </div>
 
+                    @else
 
-                        {{-- Message de l'offre --}}
-                        <div class="mb-4">
+                        <div class="border-t pt-6 mt-6">
 
-                            <label
-                                for="message"
-                                class="block font-medium text-gray-700"
-                            >
-                                Message
-                            </label>
-
-                            <textarea
-                                name="message"
-                                id="message"
-                                rows="4"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                placeholder="Présentez votre proposition au client..."
-                            >{{ old('message') }}</textarea>
-
-                            @error('message')
-
-                                <p class="text-red-600 text-sm mt-1">
-                                    {{ $message }}
+                            <div class="p-4 bg-green-100 text-green-700 rounded-lg">
+                                <p class="font-semibold">
+                                    ✓ Votre offre a déjà été envoyée.
                                 </p>
 
-                            @enderror
+                                <p class="text-sm mt-1">
+                                    Vous ne pouvez proposer qu'une seule offre pour cette mission.
+                                </p>
+                            </div>
 
                         </div>
 
+                    @endif
 
-                        {{-- Bouton offre --}}
-                        <button
-                            type="submit"
-                            style="
-                                background-color:#4f46e5;
-                                color:white;
-                                padding:10px 20px;
-                                border-radius:6px;
-                                font-weight:600;
-                                border:none;
-                                cursor:pointer;
-                            "
-                        >
-                            Proposer mes services
-                        </button>
-
-                    </form>
-
-                </div>
+                @endif
 
 
                 {{-- ============================= --}}
@@ -285,7 +318,6 @@
 
                                 </select>
 
-
                                 @error('note')
 
                                     <p class="text-red-600 text-sm mt-1">
@@ -315,7 +347,6 @@
                                     class="border-gray-300 rounded-md shadow-sm w-full"
                                     placeholder="Donnez votre avis sur le prestataire..."
                                 >{{ old('commentaire') }}</textarea>
-
 
                                 @error('commentaire')
 
@@ -353,6 +384,7 @@
             </div>
 
         </div>
+
     </div>
 
 </x-app-layout>

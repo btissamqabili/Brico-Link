@@ -48,22 +48,6 @@
                 </div>
 
             </div>
-
-            {{-- Actions administrateur --}}
-            <div class="mt-8 flex flex-wrap gap-4">
-
-                <a href="{{ route('admin.evaluations.index') }}"
-                   class="inline-flex items-center px-5 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
-                    Gérer les évaluations
-                </a>
-
-                <a href="{{ route('admin.users.index') }}"
-                   class="inline-flex items-center px-5 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
-                    Gérer les utilisateurs
-                </a>
-
-            </div>
-
             {{-- Dernières évaluations --}}
             <div class="mt-8 bg-white shadow-sm sm:rounded-lg">
 
@@ -139,3 +123,4 @@
     </div>
 
 </x-app-layout>
+

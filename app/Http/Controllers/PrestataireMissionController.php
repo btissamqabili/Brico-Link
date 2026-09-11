@@ -39,7 +39,9 @@ class PrestataireMissionController extends Controller
 
         $mission->load('offres.prestataire');
 
-        return view('missions.show', compact('mission'));
+        return view(
+            'missions.show',
+            compact('mission', 'aUneOffre')
+        );
     }
 }
-
