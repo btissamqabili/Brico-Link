@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\MissionController;
-use App\Http\Controllers\PrestataireMissionController;
-use App\Http\Controllers\OffreController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\EvaluationController;
-use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategorieController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MissionController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OffreController;
+use App\Http\Controllers\PrestataireController;
+use App\Http\Controllers\PrestataireMissionController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceController;
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return view('welcome');
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +25,7 @@ Route::get('/', function () {
 */
 
 Route::get('/dashboard', function () {
-
     return match (auth()->user()->role) {
-
         'client' => view('dashboard.client', [
             'missions' => auth()->user()
                 ->missions()
@@ -41,9 +39,7 @@ Route::get('/dashboard', function () {
 
         default => abort(403),
     };
-
 })->middleware(['auth', 'verified'])->name('dashboard');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -52,7 +48,6 @@ Route::get('/dashboard', function () {
 */
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
@@ -61,11 +56,27 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
-        Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])
-    ->name('messages.store');
-
 });
 
+/*
+|--------------------------------------------------------------------------
+| Conversations & Messages
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+    Route::get('/conversations', [ConversationController::class, 'index'])
+        ->name('conversations.index');
+
+    Route::post('/conversations/user/{user}', [ConversationController::class, 'store'])
+        ->name('conversations.store');
+
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])
+        ->name('conversations.show');
+
+    Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])
+        ->name('messages.store');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -74,7 +85,6 @@ Route::middleware('auth')->group(function () {
 */
 
 Route::middleware(['auth', 'role:client'])->group(function () {
-
     // Missions
     Route::get('/missions', [MissionController::class, 'index'])
         ->name('missions.index');
@@ -97,7 +107,6 @@ Route::middleware(['auth', 'role:client'])->group(function () {
     Route::patch('/missions/{mission}/complete', [MissionController::class, 'complete'])
         ->name('missions.complete');
 
-
     // Offres reçues
     Route::get('/missions/{mission}/offres', [OffreController::class, 'recues'])
         ->name('missions.offres');
@@ -108,18 +117,14 @@ Route::middleware(['auth', 'role:client'])->group(function () {
     Route::patch('/offres/{offre}/refuse', [OffreController::class, 'refuse'])
         ->name('offres.refuse');
 
-
     // Évaluation
     Route::post('/missions/{mission}/evaluation', [EvaluationController::class, 'store'])
         ->name('evaluations.store');
 
-
     // Profil prestataire
     Route::get('/prestataires/{id}', [PrestataireController::class, 'show'])
         ->name('prestataires.show');
-
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -128,7 +133,6 @@ Route::middleware(['auth', 'role:client'])->group(function () {
 */
 
 Route::middleware(['auth', 'role:prestataire'])->group(function () {
-
     // Services
     Route::get('/services', [ServiceController::class, 'index'])
         ->name('services.index');
@@ -148,7 +152,6 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
     Route::delete('/services/{service}', [ServiceController::class, 'destroy'])
         ->name('services.destroy');
 
-
     // Missions disponibles
     Route::get('/missions-disponibles', [PrestataireMissionController::class, 'index'])
         ->name('prestataire.missions.index');
@@ -156,13 +159,10 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
     Route::get('/missions-disponibles/{mission}', [PrestataireMissionController::class, 'show'])
         ->name('prestataire.missions.show');
 
-
     // Offres
     Route::post('/missions-disponibles/{mission}/offres', [OffreController::class, 'store'])
         ->name('offres.store');
-
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -171,25 +171,15 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/notifications', [NotificationController::class, 'index'])
         ->name('notifications.index');
 
+    Route::get('/notifications/read-all', [NotificationController::class, 'readAll'])
+        ->name('notifications.readAll');
+
     Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])
         ->name('notifications.read');
-        Route::get('/notifications/read-all', [NotificationController::class, 'readAll'])
-    ->name('notifications.readAll');
-    Route::get('/conversations', [ConversationController::class, 'index'])
-    ->name('conversations.index');
-
-Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])
-    ->name('conversations.show');
-
-Route::post('/conversations/user/{user}', [ConversationController::class, 'store'])
-    ->name('conversations.store');
-
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -198,18 +188,15 @@ Route::post('/conversations/user/{user}', [ConversationController::class, 'store
 */
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-
     Route::get('/admin', [AdminController::class, 'dashboard'])
         ->name('admin.dashboard');
 
     Route::get('/admin/evaluations', [AdminController::class, 'evaluations'])
         ->name('admin.evaluations.index');
 
-
     // Catégories
     Route::resource('categories', CategorieController::class)
         ->except(['show']);
-
 
     // Utilisateurs
     Route::get('/admin/users', [AdminController::class, 'users'])
@@ -220,9 +207,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])
         ->name('admin.users.destroy');
-
 });
-
 
 /*
 |--------------------------------------------------------------------------
