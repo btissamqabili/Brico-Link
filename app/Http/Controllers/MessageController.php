@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
 use App\Notifications\NewMessageNotification;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function store(Request $request, Conversation $conversation)
-    {
+    public function store(
+        Request $request,
+        Conversation $conversation
+    ) {
         $userId = auth()->id();
 
-        // Vérifier que l'utilisateur appartient à la conversation
+        // Vérifier que l'utilisateur appartient à la conversation.
         abort_unless(
             $conversation->client_id === $userId ||
             $conversation->prestataire_id === $userId,
@@ -30,14 +33,14 @@ class MessageController extends Controller
             'contenu' => $validated['contenu'],
         ]);
 
-        // Déterminer le destinataire
+        // Déterminer le destinataire.
         $destinataireId = $conversation->client_id === $userId
             ? $conversation->prestataire_id
             : $conversation->client_id;
 
-        $destinataire = \App\Models\User::find($destinataireId);
+        $destinataire = User::find($destinataireId);
 
-        // Envoyer la notification
+        // Envoyer la notification.
         $destinataire->notify(
             new NewMessageNotification(
                 $message->id,
@@ -52,4 +55,3 @@ class MessageController extends Controller
         );
     }
 }
-

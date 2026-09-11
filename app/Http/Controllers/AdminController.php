@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Evaluation;
 use App\Models\Mission;
 use App\Models\Offre;
-use App\Models\Evaluation;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+
 class AdminController extends Controller
 {
     public function dashboard()
@@ -24,11 +25,11 @@ class AdminController extends Controller
         $evaluations = Evaluation::with([
             'client',
             'prestataire',
-            'mission'
+            'mission',
         ])
-        ->latest()
-        ->take(5)
-        ->get();
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('dashboard.admin', compact(
             'nombreClients',
@@ -45,30 +46,34 @@ class AdminController extends Controller
         $evaluations = Evaluation::with([
             'client',
             'prestataire',
-            'mission'
+            'mission',
         ])
-        ->latest()
-        ->get();
+            ->latest()
+            ->get();
 
         return view('admin.evaluations.index', compact('evaluations'));
     }
+
     public function users()
-{
-    $users = User::latest()->get();
+    {
+        $users = User::latest()->get();
 
-    return view('admin.users.index', compact('users'));
-}
-public function showUser(User $user)
-{
-    return view('admin.users.show', compact('user'));
-}
-public function destroyUser(User $user)
-{
-    Gate::authorize('delete', $user);
-    $user->delete();
+        return view('admin.users.index', compact('users'));
+    }
 
-    return redirect()
-        ->route('admin.users.index')
-        ->with('success', 'Utilisateur supprimé avec succès.');
-}
+    public function showUser(User $user)
+    {
+        return view('admin.users.show', compact('user'));
+    }
+
+    public function destroyUser(User $user)
+    {
+        Gate::authorize('delete', $user);
+
+        $user->delete();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Utilisateur supprimé avec succès.');
+    }
 }

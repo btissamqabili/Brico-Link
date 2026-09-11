@@ -14,7 +14,10 @@ class NotificationController extends Controller
             ->latest()
             ->get();
 
-        return view('notifications.index', compact('notifications'));
+        return view(
+            'notifications.index',
+            compact('notifications')
+        );
     }
 
     public function read(string $id)
@@ -23,18 +26,13 @@ class NotificationController extends Controller
             ->notifications()
             ->findOrFail($id);
 
-        // Marquer la notification comme lue
+        // Marquer la notification comme lue.
         $notification->markAsRead();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Redirection selon le type de notification
-        |--------------------------------------------------------------------------
-        */
-
-        // Notification : nouvelle offre reçue par le client
+        // Nouvelle offre reçue par le client.
         if (
-            $notification->type === 'App\\Notifications\\NouvelleOffreNotification'
+            $notification->type ===
+            'App\\Notifications\\NouvelleOffreNotification'
         ) {
             return redirect()->route(
                 'missions.offres',
@@ -42,9 +40,10 @@ class NotificationController extends Controller
             );
         }
 
-        // Notification : offre acceptée par le prestataire
+        // Offre acceptée par le prestataire.
         if (
-            $notification->type === 'App\\Notifications\\OffreAcceptedNotification'
+            $notification->type ===
+            'App\\Notifications\\OffreAcceptedNotification'
         ) {
             return redirect()->route(
                 'prestataire.missions.show',
@@ -52,9 +51,10 @@ class NotificationController extends Controller
             );
         }
 
-        // Notification : nouveau message
+        // Nouveau message.
         if (
-            $notification->type === 'App\\Notifications\\NewMessageNotification'
+            $notification->type ===
+            'App\\Notifications\\NewMessageNotification'
         ) {
             $message = Message::findOrFail(
                 $notification->data['message_id']
@@ -66,9 +66,10 @@ class NotificationController extends Controller
             );
         }
 
-        // Notification : nouvelle mission disponible
+        // Nouvelle mission disponible.
         if (
-            $notification->type === 'App\\Notifications\\NouvelleMissionNotification'
+            $notification->type ===
+            'App\\Notifications\\NouvelleMissionNotification'
         ) {
             return redirect()->route(
                 'prestataire.missions.show',
@@ -76,13 +77,15 @@ class NotificationController extends Controller
             );
         }
 
-        // Notification : nouvelle évaluation reçue
-if (
-    $notification->type === 'App\\Notifications\\NouvelleEvaluationNotification'
-) {
-    return redirect()->route('dashboard');
-}
-        // Sécurité : si le type de notification est inconnu
+        // Nouvelle évaluation reçue.
+        if (
+            $notification->type ===
+            'App\\Notifications\\NouvelleEvaluationNotification'
+        ) {
+            return redirect()->route('dashboard');
+        }
+
+        // Sécurité : type de notification inconnu.
         return redirect()->route('notifications.index');
     }
 
@@ -98,4 +101,3 @@ if (
         );
     }
 }
-

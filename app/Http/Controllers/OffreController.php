@@ -2,23 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Offre;
 use App\Models\Mission;
-use Illuminate\Http\Request;
+use App\Models\Offre;
 use App\Notifications\NouvelleOffreNotification;
 use App\Notifications\OffreAcceptedNotification;
+use Illuminate\Http\Request;
 
 class OffreController extends Controller
 {
-    /**
-     * Afficher les offres reçues pour une mission
-     */
     public function recues(Mission $mission)
     {
-        // Vérifier que la mission appartient au client connecté
         abort_unless($mission->client_id === auth()->id(), 403);
 
-        // Récupérer les offres avec les prestataires
         $offres = $mission->offres()
             ->with('prestataire')
             ->latest()
@@ -27,24 +22,16 @@ class OffreController extends Controller
         return view('offres.recues', compact('mission', 'offres'));
     }
 
-    /**
-     * Envoyer une offre
-     */
     public function store(Request $request, Mission $mission)
     {
-        // La mission doit être ouverte
         abort_if($mission->statut !== 'ouverte', 404);
-
-        // Seul un prestataire peut envoyer une offre
         abort_unless(auth()->user()->role === 'prestataire', 403);
 
-        // Validation
         $validated = $request->validate([
             'prix_propose' => ['required', 'numeric', 'min:0'],
             'message' => ['nullable', 'string'],
         ]);
 
-        // Vérifier si le prestataire a déjà proposé une offre
         $existingOffre = Offre::where('mission_id', $mission->id)
             ->where('prestataire_id', auth()->id())
             ->exists();
@@ -56,7 +43,6 @@ class OffreController extends Controller
             );
         }
 
-        // Créer l'offre
         $offre = Offre::create([
             'mission_id' => $mission->id,
             'prestataire_id' => auth()->id(),
@@ -65,7 +51,6 @@ class OffreController extends Controller
             'statut' => 'en_attente',
         ]);
 
-        // Notification directe au client
         $mission->client->notify(
             new NouvelleOffreNotification($offre)
         );
@@ -78,37 +63,27 @@ class OffreController extends Controller
             );
     }
 
-    /**
-     * Accepter une offre
-     */
     public function accept(Offre $offre)
     {
         $mission = $offre->mission;
 
-        // Seul le client propriétaire peut accepter
         abort_unless($mission->client_id === auth()->id(), 403);
-
-        // La mission doit être encore ouverte
         abort_if($mission->statut !== 'ouverte', 404);
 
-        // Accepter l'offre sélectionnée
         $offre->update([
             'statut' => 'acceptee',
         ]);
 
-        // Notification au prestataire
         $offre->prestataire->notify(
             new OffreAcceptedNotification($offre)
         );
 
-        // Refuser automatiquement les autres offres
         Offre::where('mission_id', $mission->id)
             ->where('id', '!=', $offre->id)
             ->update([
                 'statut' => 'refusee',
             ]);
 
-        // La mission passe en cours
         $mission->update([
             'statut' => 'en_cours',
         ]);
@@ -119,17 +94,12 @@ class OffreController extends Controller
         );
     }
 
-    /**
-     * Refuser une offre
-     */
     public function refuse(Offre $offre)
     {
         $mission = $offre->mission;
 
-        // Seul le client propriétaire peut refuser
         abort_unless($mission->client_id === auth()->id(), 403);
 
-        // Refuser l'offre
         $offre->update([
             'statut' => 'refusee',
         ]);
@@ -140,4 +110,3 @@ class OffreController extends Controller
         );
     }
 }
-

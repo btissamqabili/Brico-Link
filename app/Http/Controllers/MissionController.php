@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mission;
 use App\Http\Requests\MissionStoreRequest;
 use App\Http\Requests\MissionUpdateRequest;
-use Illuminate\Support\Facades\Gate;
+use App\Models\Mission;
 use App\Models\User;
 use App\Notifications\NouvelleMissionNotification;
+use Illuminate\Support\Facades\Gate;
+
 class MissionController extends Controller
 {
     public function index()
-{
-    $missions = auth()->user()
-        ->missions()
-        ->with([
-            'evaluations',
-            'offres' => function ($query) {
-                $query->where('statut', 'acceptee');
-            },
-        ])
-        ->latest()
-        ->get();
+    {
+        $missions = auth()->user()
+            ->missions()
+            ->with([
+                'evaluations',
+                'offres' => function ($query) {
+                    $query->where('statut', 'acceptee');
+                },
+            ])
+            ->latest()
+            ->get();
 
-    return view('missions.index', compact('missions'));
-}
+        return view('missions.index', compact('missions'));
+    }
 
     public function create()
     {
@@ -39,23 +40,25 @@ class MissionController extends Controller
     }
 
     public function store(MissionStoreRequest $request)
-{
-    $validated = $request->validated();
+    {
+        $validated = $request->validated();
 
-    $mission = auth()->user()->missions()->create($validated);
+        $mission = auth()->user()
+            ->missions()
+            ->create($validated);
 
-    $prestataires = User::where('role', 'prestataire')->get();
+        $prestataires = User::where('role', 'prestataire')->get();
 
-    foreach ($prestataires as $prestataire) {
-        $prestataire->notify(
-            new NouvelleMissionNotification($mission)
-        );
+        foreach ($prestataires as $prestataire) {
+            $prestataire->notify(
+                new NouvelleMissionNotification($mission)
+            );
+        }
+
+        return redirect()
+            ->route('missions.index')
+            ->with('success', 'Mission créée avec succès.');
     }
-
-    return redirect()
-        ->route('missions.index')
-        ->with('success', 'Mission créée avec succès.');
-}
 
     public function update(
         MissionUpdateRequest $request,

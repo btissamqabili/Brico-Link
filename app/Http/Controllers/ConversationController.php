@@ -24,40 +24,49 @@ class ConversationController extends Controller
                 ->get();
         }
 
-        return view('conversations.index', compact('conversations'));
+        return view(
+            'conversations.index',
+            compact('conversations')
+        );
     }
 
     public function show(Conversation $conversation)
-{
-    $userId = auth()->id();
+    {
+        $userId = auth()->id();
 
-    abort_unless(
-        $conversation->client_id === $userId ||
-        $conversation->prestataire_id === $userId,
-        403
-    );
+        abort_unless(
+            $conversation->client_id === $userId ||
+            $conversation->prestataire_id === $userId,
+            403
+        );
 
-    // Marquer comme lus les messages reçus
-    $conversation->messages()
-        ->where('sender_id', '!=', $userId)
-        ->whereNull('lu_at')
-        ->update([
-            'lu_at' => now(),
+        // Marquer comme lus les messages reçus.
+        $conversation->messages()
+            ->where('sender_id', '!=', $userId)
+            ->whereNull('lu_at')
+            ->update([
+                'lu_at' => now(),
+            ]);
+
+        $conversation->load([
+            'client',
+            'prestataire',
+            'messages.sender',
         ]);
 
-    $conversation->load([
-        'client',
-        'prestataire',
-        'messages.sender',
-    ]);
-
-    return view('conversations.show', compact('conversation'));
-}
+        return view(
+            'conversations.show',
+            compact('conversation')
+        );
+    }
 
     public function store(User $user)
     {
         abort_unless(
-            in_array(auth()->user()->role, ['client', 'prestataire']),
+            in_array(
+                auth()->user()->role,
+                ['client', 'prestataire']
+            ),
             403
         );
 
