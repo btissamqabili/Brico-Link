@@ -16,8 +16,12 @@ class MissionUpdateRequest extends FormRequest
         return [
             'titre' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
+            'categorie_id' => ['required', 'exists:categories,id'],
             'budget' => ['nullable', 'numeric', 'min:0'],
             'adresse' => ['nullable', 'string', 'max:255'],
+            'date_souhaitee' => ['nullable', 'date', 'after_or_equal:today'],
+            'photos' => ['nullable', 'array', 'max:5'],
+            'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ];
     }
 }

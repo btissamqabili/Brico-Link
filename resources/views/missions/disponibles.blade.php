@@ -15,6 +15,28 @@
                     Missions disponibles
                 </h3>
 
+                <form method="GET" action="{{ route('prestataire.missions.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+                    <input type="search" name="q" value="{{ request('q') }}" placeholder="Rechercher une mission..."
+                        class="rounded-md border-gray-300 shadow-sm md:col-span-2">
+
+                    <select name="categorie_id" class="rounded-md border-gray-300 shadow-sm">
+                        <option value="">Toutes les catégories</option>
+                        @foreach($categories as $categorie)
+                            <option value="{{ $categorie->id }}" @selected(request('categorie_id') == $categorie->id)>
+                                {{ $categorie->nom }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <input type="number" name="budget_max" value="{{ request('budget_max') }}" min="0" step="0.01"
+                        placeholder="Budget maximum"
+                        class="rounded-md border-gray-300 shadow-sm">
+
+                    <button type="submit" class="md:col-span-4 w-fit px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold">
+                        Rechercher
+                    </button>
+                </form>
+
                 @forelse($missions as $mission)
 
                     <div class="border rounded-lg p-4 mb-4">
@@ -39,6 +61,10 @@
                             </p>
                         @endif
 
+                        @if($mission->categorie)
+                            <p class="mt-2">Catégorie : {{ $mission->categorie->nom }}</p>
+                        @endif
+
                         <p class="mt-2">
                             Statut :
                             <span class="font-semibold text-green-600">
@@ -60,6 +86,10 @@
                     </p>
 
                 @endforelse
+
+                <div class="mt-6">
+                    {{ $missions->links() }}
+                </div>
 
             </div>
 

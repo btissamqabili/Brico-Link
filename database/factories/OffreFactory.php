@@ -32,6 +32,8 @@ class OffreFactory extends Factory
                 'Je serais ravi de réaliser cette mission. Je peux commencer selon vos disponibilités.',
             ]),
 
+            'delai_execution' => fake()->numberBetween(1, 30),
+
             'statut' => fake()->randomElement([
                 'en_attente',
                 'en_attente',

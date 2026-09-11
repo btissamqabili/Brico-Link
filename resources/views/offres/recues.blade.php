@@ -89,6 +89,14 @@
 
                         </div>
 
+                        <div class="mb-3">
+                            <span class="font-semibold">Délai d'exécution :</span>
+                            {{ $offre->delai_execution ?? 'Non précisé' }}
+                            @if($offre->delai_execution)
+                                jour(s)
+                            @endif
+                        </div>
+
 
                         {{-- Message --}}
                         @if($offre->message)

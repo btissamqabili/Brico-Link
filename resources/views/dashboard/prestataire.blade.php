@@ -15,7 +15,7 @@
 
 
         {{-- Statistiques --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mb-8">
 
             {{-- Mes services --}}
             <div class="bg-white rounded-xl shadow p-6 border-l-4 border-indigo-500">
@@ -25,7 +25,7 @@
                 </p>
 
                 <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ \App\Models\Service::where('prestataire_id', auth()->id())->count() }}
+                    {{ $servicesCount }}
                 </p>
 
             </div>
@@ -39,7 +39,7 @@
                 </p>
 
                 <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ \App\Models\Mission::where('statut', 'ouverte')->count() }}
+                    {{ $missionsDisponiblesCount }}
                 </p>
 
             </div>
@@ -53,9 +53,21 @@
                 </p>
 
                 <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ \App\Models\Offre::where('prestataire_id', auth()->id())->count() }}
+                    {{ $offresCount }}
                 </p>
 
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-emerald-500">
+                <p class="text-sm text-gray-500">Missions réalisées</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $prestationsTermineesCount }}</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-amber-500">
+                <p class="text-sm text-gray-500">Revenus obtenus</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">
+                    {{ number_format($revenusObtenus, 2, ',', ' ') }} DH
+                </p>
             </div>
 
         </div>
@@ -72,14 +84,6 @@
                         Mes dernières offres
                     </h2>
                 </div>
-
-                @php
-                    $offres = \App\Models\Offre::where('prestataire_id', auth()->id())
-                        ->with('mission')
-                        ->latest()
-                        ->take(5)
-                        ->get();
-                @endphp
 
                 @if($offres->isEmpty())
 
@@ -155,7 +159,7 @@
                         </p>
 
                         <p class="text-2xl font-bold text-gray-800 mt-1">
-                            {{ \App\Models\Offre::where('prestataire_id', auth()->id())->where('statut', 'en_attente')->count() }}
+                            {{ $offresEnAttenteCount }}
                         </p>
                     </div>
 
@@ -165,7 +169,7 @@
                         </p>
 
                         <p class="text-2xl font-bold text-green-600 mt-1">
-                            {{ \App\Models\Offre::where('prestataire_id', auth()->id())->where('statut', 'acceptee')->count() }}
+                            {{ $offresAccepteesCount }}
                         </p>
                     </div>
 
@@ -175,7 +179,7 @@
                         </p>
 
                         <p class="text-2xl font-bold text-red-600 mt-1">
-                            {{ \App\Models\Offre::where('prestataire_id', auth()->id())->where('statut', 'refusee')->count() }}
+                            {{ $offresRefuseesCount }}
                         </p>
                     </div>
 

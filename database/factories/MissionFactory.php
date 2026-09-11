@@ -16,6 +16,7 @@ class MissionFactory extends Factory
     {
         return [
             'client_id' => null,
+            'categorie_id' => null,
 
             'titre' => fake()->randomElement([
                 'Réparation d’une fuite d’eau',
@@ -44,6 +45,8 @@ class MissionFactory extends Factory
                 'Hay Al Wahda, Khouribga',
                 'Hay Al Massira, Khouribga',
             ]),
+
+            'date_souhaitee' => fake()->optional()->dateTimeBetween('today', '+30 days'),
 
             'statut' => fake()->randomElement([
                 'ouverte',

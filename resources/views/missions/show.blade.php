@@ -81,6 +81,31 @@
 
                 @endif
 
+                @if($mission->categorie)
+                    <div class="mb-4">
+                        <p class="font-semibold">Catégorie :</p>
+                        <p class="mt-1">{{ $mission->categorie->nom }}</p>
+                    </div>
+                @endif
+
+                @if($mission->date_souhaitee)
+                    <div class="mb-4">
+                        <p class="font-semibold">Date souhaitée :</p>
+                        <p class="mt-1">{{ $mission->date_souhaitee->format('d/m/Y') }}</p>
+                    </div>
+                @endif
+
+                @if($mission->photos)
+                    <div class="mb-6">
+                        <p class="font-semibold mb-2">Photos :</p>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            @foreach($mission->photos as $photo)
+                                <img src="{{ Storage::disk('public')->url($photo) }}" alt="Photo de la mission" class="w-full h-32 object-cover rounded-lg">
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
 
                 <div class="mb-6">
 
@@ -168,6 +193,27 @@
 
                                 </div>
 
+                                <div class="mb-4">
+                                    <label for="delai_execution" class="block font-medium text-gray-700">
+                                        Délai d'exécution (jours)
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        name="delai_execution"
+                                        id="delai_execution"
+                                        min="1"
+                                        max="365"
+                                        value="{{ old('delai_execution') }}"
+                                        required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    >
+
+                                    @error('delai_execution')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
 
                                 {{-- Message de l'offre --}}
                                 <div class="mb-4">
@@ -236,6 +282,27 @@
 
                     @endif
 
+                @endif
+
+                @if($aUneOffre)
+                    @php
+                        $offrePrestataire = $mission->offres->firstWhere('prestataire_id', auth()->id());
+                    @endphp
+
+                    @if($offrePrestataire && $offrePrestataire->statut === 'en_attente')
+                        <div class="mt-6 flex gap-3">
+                            <a href="{{ route('offres.edit', $offrePrestataire) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold">
+                                Modifier mon offre
+                            </a>
+                            <form method="POST" action="{{ route('offres.cancel', $offrePrestataire) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" onclick="return confirm('Annuler cette offre ?')" class="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold">
+                                    Annuler mon offre
+                                </button>
+                            </form>
+                        </div>
+                    @endif
                 @endif
 
 

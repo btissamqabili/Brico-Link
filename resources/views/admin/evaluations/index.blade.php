@@ -54,6 +54,8 @@
                                         <th class="px-4 py-3 text-left">
                                             Date
                                         </th>
+
+                                        <th class="px-4 py-3 text-left">Action</th>
                                     </tr>
                                 </thead>
 
@@ -85,6 +87,14 @@
 
                                             <td class="px-4 py-3">
                                                 {{ $evaluation->created_at->format('d/m/Y') }}
+                                            </td>
+
+                                            <td class="px-4 py-3">
+                                                <form method="POST" action="{{ route('admin.evaluations.destroy', $evaluation) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" onclick="return confirm('Supprimer cette évaluation ?')" class="px-3 py-2 bg-red-600 text-white rounded-lg text-sm">Supprimer</button>
+                                                </form>
                                             </td>
 
                                         </tr>

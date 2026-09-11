@@ -6,6 +6,7 @@ use App\Models\Categorie;
 use App\Models\Evaluation;
 use App\Models\Mission;
 use App\Models\Offre;
+use App\Models\Prestation;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -232,7 +233,7 @@ class DatabaseSeeder extends Seeder
                     break;
                 }
 
-                $mission = Mission::firstOrCreate(
+                $mission = Mission::updateOrCreate(
                     [
                         'client_id' => $client->id,
                         'titre' => $data['titre'],
@@ -241,6 +242,8 @@ class DatabaseSeeder extends Seeder
                         'description' => $data['description'],
                         'budget' => $data['budget'],
                         'adresse' => $data['adresse'],
+                        'categorie_id' => $categories[$missionIndex % $categories->count()]->id,
+                        'date_souhaitee' => now()->addDays($missionIndex + 1)->toDateString(),
                         'statut' => $data['statut'],
                     ]
                 );
@@ -282,6 +285,7 @@ class DatabaseSeeder extends Seeder
                             'Je possède une bonne expérience dans ce type de travaux.',
                             'Je serais ravi de réaliser cette mission.',
                         ]),
+                        'delai_execution' => fake()->numberBetween(1, 14),
                         'statut' => 'en_attente',
                     ]
                 );
@@ -309,6 +313,18 @@ class DatabaseSeeder extends Seeder
             $offre->update([
                 'statut' => 'acceptee',
             ]);
+
+            Prestation::updateOrCreate(
+                ['offre_id' => $offre->id],
+                [
+                    'mission_id' => $mission->id,
+                    'prestataire_id' => $offre->prestataire_id,
+                    'date_debut' => now()->subDays(3),
+                    'date_fin' => now(),
+                    'statut' => 'terminee',
+                    'montant' => $offre->prix_propose,
+                ]
+            );
 
             Offre::where('mission_id', $mission->id)
                 ->where('id', '!=', $offre->id)

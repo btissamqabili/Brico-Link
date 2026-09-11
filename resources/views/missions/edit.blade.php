@@ -25,7 +25,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('missions.update', $mission) }}">
+                <form method="POST" action="{{ route('missions.update', $mission) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -59,6 +59,26 @@
                     </div>
 
                     <div class="mb-4">
+                        <label for="categorie_id" class="block font-medium mb-2">
+                            Catégorie
+                        </label>
+
+                        <select
+                            id="categorie_id"
+                            name="categorie_id"
+                            required
+                            style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;"
+                        >
+                            <option value="">Sélectionner une catégorie</option>
+                            @foreach($categories as $categorie)
+                                <option value="{{ $categorie->id }}" @selected(old('categorie_id', $mission->categorie_id) == $categorie->id)>
+                                    {{ $categorie->nom }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
                         <label for="budget" class="block font-medium mb-2">
                             Budget (DH)
                         </label>
@@ -84,6 +104,27 @@
                             id="adresse"
                             name="adresse"
                             value="{{ old('adresse', $mission->adresse) }}"
+                            style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;"
+                        >
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="photos" class="block font-medium mb-2">Ajouter des photos</label>
+                        <input type="file" id="photos" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple>
+                        <p class="text-sm text-gray-500 mt-1">Maximum 5 images au total, 5 Mo par image.</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="date_souhaitee" class="block font-medium mb-2">
+                            Date souhaitée
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date_souhaitee"
+                            name="date_souhaitee"
+                            value="{{ old('date_souhaitee', optional($mission->date_souhaitee)->format('Y-m-d')) }}"
+                            min="{{ now()->toDateString() }}"
                             style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;"
                         >
                     </div>

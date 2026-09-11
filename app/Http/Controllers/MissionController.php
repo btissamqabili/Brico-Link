@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MissionStoreRequest;
 use App\Http\Requests\MissionUpdateRequest;
+use App\Models\Categorie;
 use App\Models\Mission;
+use App\Models\Prestation;
 use App\Models\User;
 use App\Notifications\NouvelleMissionNotification;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class MissionController extends Controller
 {
@@ -29,19 +32,30 @@ class MissionController extends Controller
 
     public function create()
     {
-        return view('missions.create');
+        return view('missions.create', [
+            'categories' => Categorie::orderBy('nom')->get(),
+        ]);
     }
 
     public function edit(Mission $mission)
     {
         Gate::authorize('update', $mission);
 
-        return view('missions.edit', compact('mission'));
+        return view('missions.edit', [
+            'mission' => $mission,
+            'categories' => Categorie::orderBy('nom')->get(),
+        ]);
     }
 
     public function store(MissionStoreRequest $request)
     {
         $validated = $request->validated();
+        $photos = collect($request->file('photos', []))
+            ->map(fn ($photo) => $photo->store('missions', 'public'))
+            ->values()
+            ->all();
+
+        $validated['photos'] = $photos;
 
         $mission = auth()->user()
             ->missions()
@@ -66,7 +80,18 @@ class MissionController extends Controller
     ) {
         Gate::authorize('update', $mission);
 
-        $mission->update($request->validated());
+        $validated = $request->validated();
+        $newPhotos = collect($request->file('photos', []))
+            ->map(fn ($photo) => $photo->store('missions', 'public'))
+            ->values()
+            ->all();
+
+        $validated['photos'] = array_values(array_merge(
+            $mission->photos ?? [],
+            $newPhotos
+        ));
+
+        $mission->update($validated);
 
         return redirect()
             ->route('missions.index')
@@ -77,6 +102,7 @@ class MissionController extends Controller
     {
         Gate::authorize('delete', $mission);
 
+        Storage::disk('public')->delete($mission->photos ?? []);
         $mission->delete();
 
         return redirect()
@@ -117,6 +143,13 @@ class MissionController extends Controller
         $mission->update([
             'statut' => 'terminee',
         ]);
+
+        $mission->prestations()
+            ->where('statut', 'en_cours')
+            ->update([
+                'statut' => 'terminee',
+                'date_fin' => now(),
+            ]);
 
         return back()->with(
             'success',

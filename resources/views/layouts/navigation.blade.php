@@ -129,6 +129,27 @@
                             Évaluations
                         </x-nav-link>
 
+                        <x-nav-link
+                            :href="route('admin.missions.index')"
+                            :active="request()->routeIs('admin.missions.*')"
+                        >
+                            Missions
+                        </x-nav-link>
+
+                        <x-nav-link
+                            :href="route('admin.offres.index')"
+                            :active="request()->routeIs('admin.offres.*')"
+                        >
+                            Offres
+                        </x-nav-link>
+
+                        <x-nav-link
+                            :href="route('admin.prestations.index')"
+                            :active="request()->routeIs('admin.prestations.*')"
+                        >
+                            Prestations
+                        </x-nav-link>
+
                     @endif
 
                 </div>

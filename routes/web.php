@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\NotificationController;
@@ -12,6 +13,10 @@ use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\PrestataireMissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
+use App\Models\Offre;
+use App\Models\Mission;
+use App\Models\Prestation;
+use App\Models\Service;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,7 +38,31 @@ Route::get('/dashboard', function () {
                 ->get(),
         ]),
 
-        'prestataire' => view('dashboard.prestataire'),
+        'prestataire' => view('dashboard.prestataire', [
+            'servicesCount' => Service::where('prestataire_id', auth()->id())->count(),
+            'missionsDisponiblesCount' => Mission::where('statut', 'ouverte')->count(),
+            'offresCount' => Offre::where('prestataire_id', auth()->id())->count(),
+            'offresEnAttenteCount' => Offre::where('prestataire_id', auth()->id())
+                ->where('statut', 'en_attente')
+                ->count(),
+            'offresAccepteesCount' => Offre::where('prestataire_id', auth()->id())
+                ->where('statut', 'acceptee')
+                ->count(),
+            'offresRefuseesCount' => Offre::where('prestataire_id', auth()->id())
+                ->where('statut', 'refusee')
+                ->count(),
+            'prestationsTermineesCount' => Prestation::where('prestataire_id', auth()->id())
+                ->where('statut', 'terminee')
+                ->count(),
+            'revenusObtenus' => Prestation::where('prestataire_id', auth()->id())
+                ->where('statut', 'terminee')
+                ->sum('montant'),
+            'offres' => Offre::where('prestataire_id', auth()->id())
+                ->with('mission')
+                ->latest()
+                ->take(5)
+                ->get(),
+        ]),
 
         'admin' => app(AdminController::class)->dashboard(),
 
@@ -162,6 +191,15 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
     // Offres
     Route::post('/missions-disponibles/{mission}/offres', [OffreController::class, 'store'])
         ->name('offres.store');
+
+    Route::get('/offres/{offre}/edit', [OffreController::class, 'edit'])
+        ->name('offres.edit');
+
+    Route::put('/offres/{offre}', [OffreController::class, 'update'])
+        ->name('offres.update');
+
+    Route::delete('/offres/{offre}', [OffreController::class, 'cancel'])
+        ->name('offres.cancel');
 });
 
 /*
@@ -171,6 +209,9 @@ Route::middleware(['auth', 'role:prestataire'])->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+    Route::get('/prestations/{prestation}/facture', [FactureController::class, 'download'])
+        ->name('prestations.facture');
+
     Route::get('/notifications', [NotificationController::class, 'index'])
         ->name('notifications.index');
 
@@ -193,6 +234,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/evaluations', [AdminController::class, 'evaluations'])
         ->name('admin.evaluations.index');
+
+    Route::get('/admin/missions', [AdminController::class, 'missions'])
+        ->name('admin.missions.index');
+
+    Route::get('/admin/offres', [AdminController::class, 'offres'])
+        ->name('admin.offres.index');
+
+    Route::get('/admin/prestations', [AdminController::class, 'prestations'])
+        ->name('admin.prestations.index');
+
+    Route::patch('/admin/missions/{mission}/cancel', [AdminController::class, 'cancelMission'])
+        ->name('admin.missions.cancel');
+
+    Route::patch('/admin/offres/{offre}/refuse', [AdminController::class, 'refuseOffre'])
+        ->name('admin.offres.refuse');
+
+    Route::delete('/admin/evaluations/{evaluation}', [AdminController::class, 'destroyEvaluation'])
+        ->name('admin.evaluations.destroy');
 
     // Catégories
     Route::resource('categories', CategorieController::class)

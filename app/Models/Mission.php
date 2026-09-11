@@ -11,18 +11,31 @@ class Mission extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'date_souhaitee' => 'date',
+        'photos' => 'array',
+    ];
+
     protected $fillable = [
         'client_id',
+        'categorie_id',
         'titre',
         'description',
         'budget',
         'adresse',
+        'date_souhaitee',
+        'photos',
         'statut',
     ];
 
     public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'client_id');
+    }
+
+    public function categorie(): BelongsTo
+    {
+        return $this->belongsTo(Categorie::class);
     }
 
     public function offres(): HasMany
@@ -33,5 +46,10 @@ class Mission extends Model
     public function evaluations(): HasMany
     {
         return $this->hasMany(Evaluation::class);
+    }
+
+    public function prestations(): HasMany
+    {
+        return $this->hasMany(Prestation::class);
     }
 }
