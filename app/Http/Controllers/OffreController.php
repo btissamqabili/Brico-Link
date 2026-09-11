@@ -6,10 +6,14 @@ use App\Models\Mission;
 use App\Models\Offre;
 use App\Notifications\NouvelleOffreNotification;
 use App\Notifications\OffreAcceptedNotification;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class OffreController extends Controller
 {
+    /**
+     * Afficher les offres reçues pour les missions du client.
+     */
     public function recues(Mission $mission)
     {
         abort_unless($mission->client_id === auth()->id(), 403);
@@ -22,48 +26,55 @@ class OffreController extends Controller
         return view('offres.recues', compact('mission', 'offres'));
     }
 
-    public function store(Request $request, Mission $mission)
+    /**
+     * Créer une offre pour une mission.
+     */
+    public function store(Request $request, Mission $mission): RedirectResponse
     {
-        abort_if($mission->statut !== 'ouverte', 404);
         abort_unless(auth()->user()->role === 'prestataire', 403);
+        abort_if($mission->statut !== 'ouverte', 404);
 
         $validated = $request->validate([
             'prix_propose' => ['required', 'numeric', 'min:0'],
-            'message' => ['nullable', 'string'],
+            'message' => ['required', 'string', 'max:1000'],
         ]);
 
-        $existingOffre = Offre::where('mission_id', $mission->id)
+        $dejaPropose = $mission->offres()
             ->where('prestataire_id', auth()->id())
             ->exists();
 
-        if ($existingOffre) {
-            return back()->with(
-                'error',
-                'Vous avez déjà proposé une offre pour cette mission.'
-            );
+        if ($dejaPropose) {
+            return back()->withErrors([
+                'message' => 'Vous avez déjà proposé une offre pour cette mission.',
+            ]);
         }
 
         $offre = Offre::create([
             'mission_id' => $mission->id,
             'prestataire_id' => auth()->id(),
             'prix_propose' => $validated['prix_propose'],
-            'message' => $validated['message'] ?? null,
+            'message' => $validated['message'],
             'statut' => 'en_attente',
         ]);
 
         $mission->client->notify(
-            new NouvelleOffreNotification($offre)
+            new NouvelleOffreNotification(
+                $offre->mission_id,
+                $offre->prestataire->name,
+                (float) $offre->prix_propose
+            )
         );
 
-        return redirect()
-            ->route('prestataire.missions.show', $mission)
-            ->with(
-                'success',
-                'Votre offre a été envoyée avec succès.'
-            );
+        return back()->with(
+            'success',
+            'Votre offre a été envoyée avec succès.'
+        );
     }
 
-    public function accept(Offre $offre)
+    /**
+     * Accepter une offre.
+     */
+    public function accept(Offre $offre): RedirectResponse
     {
         $mission = $offre->mission;
 
@@ -94,7 +105,10 @@ class OffreController extends Controller
         );
     }
 
-    public function refuse(Offre $offre)
+    /**
+     * Refuser une offre.
+     */
+    public function refuse(Offre $offre): RedirectResponse
     {
         $mission = $offre->mission;
 
@@ -106,7 +120,8 @@ class OffreController extends Controller
 
         return back()->with(
             'success',
-            'Offre refusée.'
+            'Offre refusée avec succès.'
         );
     }
 }
+
