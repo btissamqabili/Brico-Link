@@ -5,24 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>Bricofy</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+    <body class="antialiased">
+        <div class="min-h-screen bg-[#f6f3eb] px-5 py-10 sm:flex sm:flex-col sm:items-center sm:justify-center">
             <div>
                 <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                    <span aria-label="Bricofy" class="flex items-center gap-3 font-serif text-3xl font-bold tracking-[-0.04em] text-[#7F2020]"><span aria-hidden="true" class="flex h-10 w-10 items-center justify-center rounded-sm bg-[#7F2020] text-xl text-[#F6F3EB]">⚒</span>Bricofy<span class="text-[#869B7E]">.</span></span>
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="mt-8 w-full overflow-hidden border border-[#e5dfd4] bg-white px-6 py-7 shadow-[0_10px_30px_rgba(47,41,38,0.045)] sm:max-w-md sm:px-8">
                 {{ $slot }}
             </div>
         </div>

@@ -2,20 +2,18 @@
 
     {{-- Header --}}
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
+        <div><p class="eyebrow">Votre espace</p><h2 class="display-title mt-3">Profil</h2></div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="page-frame py-8 lg:py-12">
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="mx-auto max-w-4xl space-y-6">
 
             {{-- ===================================================== --}}
             {{-- INFORMATIONS DU PROFIL --}}
             {{-- ===================================================== --}}
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="surface p-5 sm:p-8">
 
                 <div class="max-w-xl">
 
@@ -32,14 +30,12 @@
 
             @if(auth()->user()->role === 'prestataire')
 
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                <div class="surface p-5 sm:p-8">
 
                     <div class="max-w-xl">
 
                         {{-- Titre --}}
-                        <h3 class="text-lg font-semibold text-gray-800 mb-6">
-                            ⭐ Évaluations
-                        </h3>
+                        <h3 class="eyebrow mb-6">Évaluations reçues</h3>
 
 
                         @if($evaluations->count() > 0)
@@ -50,12 +46,12 @@
 
                             <div class="mb-8 text-center">
 
-                                <div class="text-3xl font-bold text-gray-800">
+                                <div class="font-serif text-4xl text-[#2F2926]">
                                     {{ number_format($evaluations->avg('note'), 1) }} / 5
                                 </div>
 
                                 {{-- Étoiles moyennes --}}
-                                <div class="text-yellow-500 text-2xl mt-1">
+                                <div class="mt-1 text-2xl text-[#7F2020]">
 
                                     @for($i = 1; $i <= 5; $i++)
 
@@ -69,7 +65,7 @@
 
                                 </div>
 
-                                <p class="text-sm text-gray-500 mt-1">
+                                <p class="mt-1 text-sm text-[#6F6862]">
 
                                     {{ $evaluations->count() }}
 
@@ -91,14 +87,14 @@
 
                                 @foreach($evaluations as $evaluation)
 
-                                    <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="border-b border-[#e5dfd4] pb-4">
 
                                         {{-- Client + note --}}
                                         <div class="flex justify-between items-center mb-3">
 
                                             <div>
 
-                                                <p class="font-semibold text-gray-800">
+                                                <p class="font-semibold text-[#2F2926]">
 
                                                     {{ $evaluation->client->name ?? 'Client' }}
 
@@ -108,7 +104,7 @@
 
 
                                             {{-- Étoiles --}}
-                                            <div class="text-yellow-500 text-lg">
+                                            <div class="text-lg text-[#7F2020]">
 
                                                 @for($i = 1; $i <= 5; $i++)
 
@@ -128,7 +124,7 @@
                                         {{-- Commentaire --}}
                                         @if($evaluation->commentaire)
 
-                                            <p class="text-gray-600 text-sm">
+                                            <p class="text-sm leading-6 text-[#6F6862]">
 
                                                 {{ $evaluation->commentaire }}
 
@@ -136,7 +132,7 @@
 
                                         @else
 
-                                            <p class="text-gray-400 text-sm italic">
+                                            <p class="text-sm italic text-[#6F6862]">
 
                                                 Aucun commentaire.
 
@@ -146,7 +142,7 @@
 
 
                                         {{-- Date --}}
-                                        <p class="text-xs text-gray-400 mt-3">
+                                        <p class="mt-3 text-xs text-[#6F6862]">
 
                                             {{ $evaluation->created_at->format('d/m/Y') }}
 
@@ -187,7 +183,7 @@
             {{-- MOT DE PASSE --}}
             {{-- ===================================================== --}}
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="surface p-5 sm:p-8">
 
                 <div class="max-w-xl">
 
@@ -202,7 +198,7 @@
             {{-- SUPPRESSION DU COMPTE --}}
             {{-- ===================================================== --}}
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="surface p-5 sm:p-8">
 
                 <div class="max-w-xl">
 

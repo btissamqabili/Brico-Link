@@ -1,17 +1,3 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="page-frame"><div class="surface-soft mx-auto max-w-3xl p-8 sm:p-12"><p class="eyebrow">Bricofy</p><h1 class="display-title mt-3">Bienvenue dans votre espace.</h1><p class="mt-4 text-sm leading-6 text-[#6F6862]">Votre rôle n’a pas encore de tableau personnalisé. Revenez à l’accueil pour découvrir les prochaines actions disponibles.</p><a href="{{ route('dashboard') }}" class="action-primary mt-7">Ouvrir mon espace</a></div></div>
 </x-app-layout>

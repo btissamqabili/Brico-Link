@@ -1,3 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	:root { --bordeaux: #8b1e1e; --bordeaux-dark: #6f1717; --sage: #869b7e; --canvas: #f5f5f3; --ink: #252525; --muted: #4a4a4a; --line: #deded9; }
+	body { background: var(--canvas); color: var(--ink); font-family: 'DM Sans', sans-serif; }
+}
+
+@layer components {
+	/* Keep older Blade utility classes aligned with the current Bricofy palette. */
+	[class~="text-[#7F2020]"] { color: var(--bordeaux) !important; }
+	[class~="bg-[#7F2020]"] { background-color: var(--bordeaux) !important; }
+	[class~="border-[#7F2020]"] { border-color: var(--bordeaux) !important; }
+	[class~="text-[#2F2926]"] { color: var(--ink) !important; }
+	[class~="text-[#6F6862]"] { color: var(--muted) !important; }
+	[class~="bg-[#f6f3eb]"] { background-color: var(--canvas) !important; }
+	[class~="border-[#e5dfd4]"] { border-color: var(--line) !important; }
+
+	.page-frame { @apply mx-auto w-full max-w-[1440px] px-5 py-8 sm:px-8 lg:px-12 lg:py-12; }
+	.eyebrow { @apply text-[11px] font-bold uppercase tracking-[0.22em]; color: var(--bordeaux); }
+	.display-title { font-family: 'Libre Baskerville', serif; @apply text-3xl leading-tight sm:text-4xl; color: var(--ink); }
+	.surface { @apply border bg-white; border-color: var(--line); box-shadow: 0 10px 30px rgba(47, 41, 38, 0.045); }
+	.surface-soft { @apply border; background: #efeee2; border-color: #dcdfc6; }
+	.action-primary { @apply inline-flex items-center justify-center rounded-sm px-5 py-3 text-sm font-bold text-white transition; background: var(--bordeaux); }
+	.action-primary:hover { background: var(--bordeaux-dark); }
+	.action-quiet { @apply inline-flex items-center justify-center border px-4 py-2 text-sm font-semibold transition; border-color: var(--line); color: var(--bordeaux); }
+	.action-quiet:hover { background: var(--canvas); }
+	.status-pill { @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold; }
+	.status-open { background: #edf1e8; color: #52684d; }
+	.status-progress { background: #f7ebd2; color: #8b5d1d; }
+	.status-done { background: #e7eee8; color: #386047; }
+	.status-cancelled { background: #f4e1df; color: var(--bordeaux); }
+	.field-label { @apply mb-2 block text-sm font-bold; color: var(--ink); }
+	.field-control { @apply block w-full rounded-sm border bg-white px-4 py-3 text-sm shadow-none transition; border-color: var(--line); color: var(--ink); }
+	.field-control:focus { @apply outline-none ring-2; border-color: var(--sage); --tw-ring-color: rgba(134, 155, 126, 0.28); }
+	.notice-success { @apply border px-4 py-3 text-sm; background: #edf1e8; border-color: #cbd8c5; color: #386047; }
+	.notice-error { @apply border px-4 py-3 text-sm; background: #f8e9e7; border-color: #e8c4c0; color: var(--bordeaux); }
+	.list-row { @apply border-b p-5 transition last:border-0 sm:p-7; border-color: var(--line); }
+	.list-row:hover { background: #fcfbf8; }
+	.data-table { @apply w-full text-left text-sm; }
+	.data-table th { @apply border-b px-4 py-4 text-[11px] font-bold uppercase tracking-[0.12em]; border-color: var(--line); color: var(--muted); }
+	.data-table td { @apply border-b px-4 py-4 align-top; border-color: var(--line); }
+	@media (max-width: 639px) {
+		.data-table thead { @apply hidden; }
+		.data-table, .data-table tbody, .data-table tr, .data-table td { @apply block w-full; }
+		.data-table tr { @apply border-b p-5; border-color: var(--line); }
+		.data-table td { @apply flex justify-between gap-4 border-0 px-0 py-2 text-right; }
+		.data-table td::before { content: attr(data-label); @apply text-left text-[11px] font-bold uppercase tracking-[0.1em]; color: var(--muted); }
+	}
+}

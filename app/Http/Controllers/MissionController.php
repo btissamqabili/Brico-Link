@@ -50,12 +50,6 @@ class MissionController extends Controller
     public function store(MissionStoreRequest $request)
     {
         $validated = $request->validated();
-        $photos = collect($request->file('photos', []))
-            ->map(fn ($photo) => $photo->store('missions', 'public'))
-            ->values()
-            ->all();
-
-        $validated['photos'] = $photos;
 
         $mission = auth()->user()
             ->missions()
@@ -81,15 +75,6 @@ class MissionController extends Controller
         Gate::authorize('update', $mission);
 
         $validated = $request->validated();
-        $newPhotos = collect($request->file('photos', []))
-            ->map(fn ($photo) => $photo->store('missions', 'public'))
-            ->values()
-            ->all();
-
-        $validated['photos'] = array_values(array_merge(
-            $mission->photos ?? [],
-            $newPhotos
-        ));
 
         $mission->update($validated);
 

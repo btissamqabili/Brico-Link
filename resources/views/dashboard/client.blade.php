@@ -1,189 +1,58 @@
 <x-app-layout>
-
-    <div class="max-w-7xl mx-auto p-6">
-
-        {{-- Header --}}
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-
+    <div class="page-frame">
+        <section class="grid gap-8 border-b border-[#e5dfd4] pb-10 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">
-                    Dashboard Client
-                </h1>
-
-                <p class="text-gray-600 mt-1">
-                    Bienvenue dans votre espace client.
-                </p>
+                <p class="eyebrow">Espace client · {{ now()->format('d M Y') }}</p>
+                <h1 class="display-title mt-4 max-w-2xl">Les bons gestes commencent par la bonne rencontre.</h1>
+                <p class="mt-5 max-w-xl text-base leading-7 text-[#6F6862]">Suivez vos demandes, comparez les savoir-faire proposés et gardez chaque étape de votre projet à portée de main.</p>
             </div>
-
-            <a
-                href="{{ route('missions.create') }}"
-                class="inline-flex items-center justify-center px-5 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
-            >
-                + Créer une mission
-            </a>
-
-        </div>
-
-
-        {{-- Statistiques --}}
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-
-            {{-- Total --}}
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-indigo-500">
-
-                <p class="text-sm text-gray-500">
-                    Total missions
-                </p>
-
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ $missions->count() }}
-                </p>
-
-            </div>
-
-
-            {{-- Ouvertes --}}
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-blue-500">
-
-                <p class="text-sm text-gray-500">
-                    Missions ouvertes
-                </p>
-
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ $missions->where('statut', 'ouverte')->count() }}
-                </p>
-
-            </div>
-
-
-            {{-- En cours --}}
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-yellow-500">
-
-                <p class="text-sm text-gray-500">
-                    Missions en cours
-                </p>
-
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ $missions->where('statut', 'en_cours')->count() }}
-                </p>
-
-            </div>
-
-
-            {{-- Terminées --}}
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-green-500">
-
-                <p class="text-sm text-gray-500">
-                    Missions terminées
-                </p>
-
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ $missions->where('statut', 'terminee')->count() }}
-                </p>
-
-            </div>
-
-        </div>
-
-
-        {{-- Dernières missions --}}
-        <div class="bg-white rounded-xl shadow">
-
-            <div class="p-6 border-b">
-
-                <h2 class="text-xl font-bold text-gray-800">
-                    Mes dernières missions
-                </h2>
-
-            </div>
-
-
-            @if($missions->isEmpty())
-
-                <div class="p-8 text-center">
-
-                    <p class="text-gray-500 mb-4">
-                        Vous n'avez encore créé aucune mission.
-                    </p>
-
-                    <a
-                        href="{{ route('missions.create') }}"
-                        class="inline-block px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                    >
-                        Créer ma première mission
-                    </a>
-
+            <div class="relative min-h-[300px] overflow-hidden bg-[#2F2926] p-6 text-white lg:ml-auto lg:max-w-sm">
+                <img src="{{ asset('images/heroes/client-renovation.jpg') }}" alt="Artisan réalisant des travaux dans une maison" class="absolute inset-0 h-full w-full object-cover opacity-45">
+                <div class="absolute inset-0 bg-[#7F2020]/65"></div>
+                <span class="absolute -right-5 -top-8 font-serif text-8xl text-[#C9CAAC]/30">“</span>
+                <div class="relative flex h-full flex-col justify-between">
+                <p class="eyebrow !text-[#C9CAAC]">Votre prochain geste</p>
+                @if($missions->where('statut', 'ouverte')->isNotEmpty())
+                    <div><p class="mt-3 font-serif text-xl leading-7 text-white">Votre demande attend peut-être encore le bon artisan.</p><a href="{{ route('missions.index') }}" class="mt-5 inline-flex border-b border-[#C9CAAC] pb-1 text-sm font-bold text-[#C9CAAC]">Suivre mes missions <span class="ml-3">→</span></a></div>
+                @else
+                    <div><p class="mt-3 font-serif text-xl leading-7 text-white">Un nouveau projet à la maison ? Décrivez-le, on s’occupe de la suite.</p><a href="{{ route('missions.create') }}" class="mt-5 inline-flex border-b border-[#C9CAAC] pb-1 text-sm font-bold text-[#C9CAAC]">Publier une demande <span class="ml-3">→</span></a></div>
+                @endif
                 </div>
+            </div>
+        </section>
 
-            @else
+        <section class="grid gap-8 py-10 lg:grid-cols-[0.72fr_1.28fr]">
+            <div>
+                <p class="eyebrow">En un regard</p>
+                <div class="mt-5 divide-y divide-[#e5dfd4] border-y border-[#e5dfd4]">
+                    <div class="flex items-baseline justify-between py-4"><span class="text-sm text-[#6F6862]">Toutes mes missions</span><strong class="font-serif text-3xl">{{ $missions->count() }}</strong></div>
+                    <div class="flex items-baseline justify-between py-4"><span class="text-sm text-[#6F6862]">En attente d’offres</span><strong class="font-serif text-3xl text-[#7F2020]">{{ $missions->where('statut', 'ouverte')->count() }}</strong></div>
+                    <div class="flex items-baseline justify-between py-4"><span class="text-sm text-[#6F6862]">En cours</span><strong class="font-serif text-3xl text-[#869B7E]">{{ $missions->where('statut', 'en_cours')->count() }}</strong></div>
+                </div>
+            </div>
 
-                <div class="divide-y">
-
-                    @foreach($missions->take(5) as $mission)
-
-                        <div class="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-                            <div>
-
-                                <h3 class="font-semibold text-lg text-gray-800">
-                                    {{ $mission->titre }}
-                                </h3>
-
-                                <p class="text-gray-500 text-sm mt-1">
-                                    {{ Str::limit($mission->description, 100) }}
-                                </p>
-
-                                @if($mission->budget !== null)
-
-                                    <p class="text-sm text-gray-600 mt-2">
-                                        Budget :
-                                        <strong>
-                                            {{ number_format($mission->budget, 2, ',', ' ') }} DH
-                                        </strong>
-                                    </p>
-
-                                @endif
-
-                            </div>
-
-
-                            <div class="flex items-center gap-3 flex-wrap">
-
-                                {{-- Statut --}}
-                                @php
-                                    $statusClasses = match($mission->statut) {
-                                        'ouverte' => 'bg-blue-100 text-blue-700',
-                                        'en_cours' => 'bg-yellow-100 text-yellow-700',
-                                        'terminee' => 'bg-green-100 text-green-700',
-                                        'annulee' => 'bg-red-100 text-red-700',
-                                        default => 'bg-gray-100 text-gray-700',
-                                    };
-                                @endphp
-
-                                <span class="px-3 py-1 rounded-full text-sm font-semibold {{ $statusClasses }}">
-                                    {{ ucfirst(str_replace('_', ' ', $mission->statut)) }}
-                                </span>
-
-                                {{-- Voir les offres --}}
-                                <a
-                                    href="{{ route('missions.offres', $mission) }}"
-                                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
-                                >
-                                    Voir les offres
-                                </a>
-
-                            </div>
-
+            <div class="surface overflow-hidden">
+                <div class="flex items-end justify-between border-b border-[#e5dfd4] p-6 sm:p-8">
+                    <div><p class="eyebrow">Votre carnet de projets</p><h2 class="mt-2 font-serif text-2xl">Missions récentes</h2></div>
+                    <a href="{{ route('missions.index') }}" class="hidden text-sm font-bold text-[#7F2020] sm:block">Tout voir →</a>
+                </div>
+                @forelse($missions->take(5) as $mission)
+                    @php
+                        $statusClass = match($mission->statut) {
+                            'ouverte' => 'status-open', 'en_cours' => 'status-progress', 'terminee' => 'status-done', 'annulee' => 'status-cancelled', default => 'bg-[#f1eee8] text-[#6F6862]',
+                        };
+                    @endphp
+                    <div class="border-b border-[#e5dfd4] p-6 last:border-0 sm:p-8">
+                        <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                            <div class="max-w-xl"><p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#869B7E]">{{ $mission->created_at?->format('d/m/Y') }}</p><h3 class="mt-2 font-serif text-xl">{{ $mission->titre }}</h3><p class="mt-2 text-sm leading-6 text-[#6F6862]">{{ Str::limit($mission->description, 115) }}</p></div>
+                            <span class="status-pill {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $mission->statut)) }}</span>
                         </div>
-
-                    @endforeach
-
-                </div>
-
-            @endif
-
-        </div>
-
+                        <div class="mt-5 flex flex-wrap items-center justify-between gap-3"><span class="text-sm text-[#6F6862]">Budget <strong class="text-[#2F2926]">{{ $mission->budget !== null ? number_format($mission->budget, 2, ',', ' ') . ' DH' : 'À définir' }}</strong></span><a href="{{ route('missions.offres', $mission) }}" class="action-quiet">Voir les offres <span class="ml-2">→</span></a></div>
+                    </div>
+                @empty
+                    <div class="p-10 text-center"><p class="font-serif text-xl">Votre carnet est encore vide.</p><p class="mt-2 text-sm text-[#6F6862]">Décrivez votre premier projet pour rencontrer un artisan de confiance.</p><a href="{{ route('missions.create') }}" class="action-primary mt-6">Créer une mission</a></div>
+                @endforelse
+            </div>
+        </section>
     </div>
-
 </x-app-layout>

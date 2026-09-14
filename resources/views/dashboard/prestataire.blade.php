@@ -1,194 +1,22 @@
 <x-app-layout>
+    <div class="page-frame">
+        <section class="grid gap-8 border-b border-[#e5dfd4] pb-10 lg:grid-cols-[0.9fr_1.1fr]">
+            <div><p class="eyebrow">Atelier prestataire · aujourd’hui</p><h1 class="display-title mt-4">Votre savoir-faire mérite les bons projets.</h1><p class="mt-5 max-w-lg text-base leading-7 text-[#6F6862]">Repérez les demandes qui vous ressemblent, présentez vos services avec justesse et construisez une réputation locale durable.</p><a href="{{ route('prestataire.missions.index') }}" class="action-primary mt-7">Explorer les missions <span class="ml-3">→</span></a></div>
+            <div class="relative flex min-h-[300px] items-end overflow-hidden bg-[#7F2020] p-7 text-white sm:p-10"><img src="{{ asset('images/heroes/artisan-workshop.jpg') }}" alt="Menuisier concentré sur son travail" class="absolute inset-0 h-full w-full object-cover opacity-40"><div class="absolute inset-0 bg-[#7F2020]/70"></div><span class="absolute -right-2 top-0 font-serif text-[12rem] leading-none text-white/10">✳</span><div class="relative"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#C9CAAC]">La prochaine opportunité</p><p class="mt-4 max-w-md font-serif text-2xl leading-9">{{ $missionsDisponiblesCount }} mission{{ $missionsDisponiblesCount > 1 ? 's' : '' }} ouverte{{ $missionsDisponiblesCount > 1 ? 's' : '' }} attend{{ $missionsDisponiblesCount > 1 ? 'ent' : '' }} votre regard.</p><a href="{{ route('prestataire.missions.index') }}" class="mt-6 inline-block border-b border-[#C9CAAC] pb-1 text-sm font-bold text-[#C9CAAC]">Voir les demandes →</a></div></div>
+        </section>
 
-    <div class="max-w-7xl mx-auto p-6">
-
-        {{-- Header --}}
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">
-                Dashboard Prestataire
-            </h1>
-
-            <p class="text-gray-600 mt-1">
-                Bienvenue dans votre espace prestataire.
-            </p>
-        </div>
-
-
-        {{-- Statistiques --}}
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mb-8">
-
-            {{-- Mes services --}}
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-indigo-500">
-
-                <p class="text-sm text-gray-500">
-                    Mes services
-                </p>
-
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ $servicesCount }}
-                </p>
-
+        <section class="grid gap-8 py-10 lg:grid-cols-[1.25fr_0.75fr]">
+            <div class="surface overflow-hidden">
+                <div class="flex items-end justify-between border-b border-[#e5dfd4] p-6 sm:p-8"><div><p class="eyebrow">Votre activité</p><h2 class="mt-2 font-serif text-2xl">Les dernières offres</h2></div><a href="{{ route('prestataire.missions.index') }}" class="text-sm font-bold text-[#7F2020]">Nouvelle recherche →</a></div>
+                @forelse($offres as $offre)
+                    @php $offreClass = match($offre->statut) { 'en_attente' => 'status-progress', 'acceptee' => 'status-done', 'refusee' => 'status-cancelled', default => 'bg-[#f1eee8] text-[#6F6862]' }; @endphp
+                    <div class="border-b border-[#e5dfd4] p-6 last:border-0 sm:p-8"><div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#869B7E]">Proposition envoyée</p><h3 class="mt-2 font-serif text-xl">{{ $offre->mission->titre ?? 'Mission supprimée' }}</h3><p class="mt-2 text-sm text-[#6F6862]">Votre prix : <strong class="text-[#2F2926]">{{ number_format($offre->prix_propose, 2, ',', ' ') }} DH</strong></p></div><span class="status-pill {{ $offreClass }}">{{ ucfirst(str_replace('_', ' ', $offre->statut)) }}</span></div></div>
+                @empty
+                    <div class="p-10 text-center"><p class="font-serif text-xl">Votre activité commence ici.</p><p class="mt-2 text-sm text-[#6F6862]">Parcourez les missions et envoyez une première proposition.</p></div>
+                @endforelse
             </div>
 
-
-            {{-- Missions disponibles --}}
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-blue-500">
-
-                <p class="text-sm text-gray-500">
-                    Missions disponibles
-                </p>
-
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ $missionsDisponiblesCount }}
-                </p>
-
-            </div>
-
-
-            {{-- Mes offres --}}
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-green-500">
-
-                <p class="text-sm text-gray-500">
-                    Mes offres
-                </p>
-
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ $offresCount }}
-                </p>
-
-            </div>
-
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-emerald-500">
-                <p class="text-sm text-gray-500">Missions réalisées</p>
-                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $prestationsTermineesCount }}</p>
-            </div>
-
-            <div class="bg-white rounded-xl shadow p-6 border-l-4 border-amber-500">
-                <p class="text-sm text-gray-500">Revenus obtenus</p>
-                <p class="text-3xl font-bold text-gray-800 mt-2">
-                    {{ number_format($revenusObtenus, 2, ',', ' ') }} DH
-                </p>
-            </div>
-
-        </div>
-
-
-        {{-- Résumé --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            {{-- Dernières offres --}}
-            <div class="bg-white rounded-xl shadow">
-
-                <div class="p-6 border-b">
-                    <h2 class="text-xl font-bold text-gray-800">
-                        Mes dernières offres
-                    </h2>
-                </div>
-
-                @if($offres->isEmpty())
-
-                    <div class="p-6">
-                        <p class="text-gray-500">
-                            Vous n'avez encore envoyé aucune offre.
-                        </p>
-                    </div>
-
-                @else
-
-                    <div class="divide-y">
-
-                        @foreach($offres as $offre)
-
-                            <div class="p-5">
-
-                                <div class="flex items-start justify-between gap-4">
-
-                                    <div>
-                                        <h3 class="font-semibold text-gray-800">
-                                            {{ $offre->mission->titre ?? 'Mission supprimée' }}
-                                        </h3>
-
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            Prix proposé :
-                                            <strong>
-                                                {{ number_format($offre->prix_propose, 2, ',', ' ') }} DH
-                                            </strong>
-                                        </p>
-                                    </div>
-
-                                    @php
-                                        $offreClasses = match($offre->statut) {
-                                            'en_attente' => 'bg-yellow-100 text-yellow-700',
-                                            'acceptee' => 'bg-green-100 text-green-700',
-                                            'refusee' => 'bg-red-100 text-red-700',
-                                            default => 'bg-gray-100 text-gray-700',
-                                        };
-                                    @endphp
-
-                                    <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $offreClasses }}">
-                                        {{ ucfirst(str_replace('_', ' ', $offre->statut)) }}
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        @endforeach
-
-                    </div>
-
-                @endif
-
-            </div>
-
-
-            {{-- Informations rapides --}}
-            <div class="bg-white rounded-xl shadow">
-
-                <div class="p-6 border-b">
-                    <h2 class="text-xl font-bold text-gray-800">
-                        Votre activité
-                    </h2>
-                </div>
-
-                <div class="p-6 space-y-5">
-
-                    <div>
-                        <p class="text-sm text-gray-500">
-                            Offres en attente
-                        </p>
-
-                        <p class="text-2xl font-bold text-gray-800 mt-1">
-                            {{ $offresEnAttenteCount }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p class="text-sm text-gray-500">
-                            Offres acceptées
-                        </p>
-
-                        <p class="text-2xl font-bold text-green-600 mt-1">
-                            {{ $offresAccepteesCount }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p class="text-sm text-gray-500">
-                            Offres refusées
-                        </p>
-
-                        <p class="text-2xl font-bold text-red-600 mt-1">
-                            {{ $offresRefuseesCount }}
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+            <aside class="surface-soft p-7 sm:p-8"><p class="eyebrow">Repères de l’atelier</p><div class="mt-6 space-y-6"><div class="flex items-end justify-between border-b border-[#d7dac2] pb-4"><span class="text-sm text-[#6F6862]">Services publiés</span><strong class="font-serif text-3xl">{{ $servicesCount }}</strong></div><div class="flex items-end justify-between border-b border-[#d7dac2] pb-4"><span class="text-sm text-[#6F6862]">Offres en attente</span><strong class="font-serif text-3xl text-[#7F2020]">{{ $offresEnAttenteCount }}</strong></div><div class="flex items-end justify-between border-b border-[#d7dac2] pb-4"><span class="text-sm text-[#6F6862]">Missions réalisées</span><strong class="font-serif text-3xl text-[#52684d]">{{ $prestationsTermineesCount }}</strong></div><div><p class="text-sm text-[#6F6862]">Revenus obtenus</p><p class="mt-1 font-serif text-2xl">{{ number_format($revenusObtenus, 2, ',', ' ') }} <span class="text-base">DH</span></p></div></div><a href="{{ route('services.index') }}" class="action-quiet mt-8 w-full">Soigner mes services</a></aside>
+        </section>
     </div>
-
 </x-app-layout>
